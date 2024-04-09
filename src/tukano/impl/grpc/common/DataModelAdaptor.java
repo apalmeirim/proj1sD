@@ -1,6 +1,8 @@
 package tukano.impl.grpc.common;
 
 import tukano.api.User;
+import tukano.api.Short;
+import tukano.impl.grpc.generated_java.ShortsProtoBuf.GrpcShort;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser;
 
 public class DataModelAdaptor {
@@ -22,4 +24,18 @@ public class DataModelAdaptor {
 				.build();
 	}
 
+	public static Short GrpcShort_to_Short( GrpcShort from )  {
+		return new Short(
+				from.getShortId(),
+				from.getOwnerId(),
+				from.getBlobUrl());
+	}
+
+	public static GrpcShort Short_to_GrpcShort( Short from )  {
+		return GrpcShort.newBuilder()
+				.setShortId( from.getShortId())
+				.setOwnerId( from.getOwnerId())
+				.setBlobUrl(from.getBlobUrl())
+				.build();
+	}
 }
