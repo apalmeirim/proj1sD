@@ -31,15 +31,13 @@ public class JavaShorts implements Shorts {
             return Result.error(Result.ErrorCode.FORBIDDEN);
         if (res.equals(Result.error( Result.ErrorCode.BAD_REQUEST)))
             return Result.error(Result.ErrorCode.BAD_REQUEST);
-        Short s = new Short();
+        Short s = new Short("ID_" + shortsIdGenerator, userId, "ID_" + shortsIdGenerator);
         // quando fizermos os blobs alterar os sets!!!
-        s.setOwnerId(userId);
-        s.setTimestamp(System.currentTimeMillis());
-        Log.info("createShort: ID_" + shortsIdGenerator);
-        s.setShortId("ID_" + shortsIdGenerator++);
         shortsID.put(s.getShortId(),s);
         shortsUser.get(userId).add(s.getShortId());
         likes.put(s.getShortId(),new ArrayList<>());
+        // blobIDs.put("ID_" + shortsIdGenerator, s);
+        Log.info("createShort: ID_" + shortsIdGenerator++);
         return Result.ok(s);
     }
 
