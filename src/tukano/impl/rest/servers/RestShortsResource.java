@@ -23,6 +23,7 @@ public class RestShortsResource implements RestShorts {
 
     @Override
     public void deleteShort(String shortId, String password) {
+        impl.deleteShort(shortId, password);
     }
 
     @Override
@@ -37,6 +38,7 @@ public class RestShortsResource implements RestShorts {
 
     @Override
     public void follow(String userId1, String userId2, boolean isFollowing, String password) {
+        impl.follow(userId1, userId2, isFollowing, password);
     }
 
     @Override
@@ -46,6 +48,7 @@ public class RestShortsResource implements RestShorts {
 
     @Override
     public void like(String shortId, String userId, boolean isLiked, String password) {
+        impl.like(shortId, userId, isLiked, password);
     }
 
     @Override
