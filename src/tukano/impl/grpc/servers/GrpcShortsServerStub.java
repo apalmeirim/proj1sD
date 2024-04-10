@@ -5,7 +5,6 @@ package tukano.impl.grpc.servers;
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.stub.StreamObserver;
-import org.hibernate.sql.Delete;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.impl.grpc.generated_java.ShortsGrpc;
@@ -73,14 +72,14 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
             responseObserver.onCompleted();
         }
     }
-    //isto esta bem?
+
     @Override
     public void getShorts(GetShortsArgs request, StreamObserver<GetShortsResult> responseObserver) {
         var res = impl.getShorts(request.getUserId());
         if( ! res.isOK() )
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            responseObserver.onNext(GetShortsResult.newBuilder().build());
+            responseObserver.onNext(GetShortsResult.newBuilder().addAllShortId(res.value()).build());
             responseObserver.onCompleted();
         }
     }
@@ -96,14 +95,13 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
         }
     }
 
-    //isto esta bem?
     @Override
     public void followers(FollowersArgs request, StreamObserver<FollowersResult> responseObserver) {
         var res = impl.followers(request.getUserId(), request.getPassword());
         if( ! res.isOK() )
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            responseObserver.onNext(FollowersResult.newBuilder().build());
+            responseObserver.onNext(FollowersResult.newBuilder().addAllUserId(res.value()).build());
             responseObserver.onCompleted();
         }
     }
@@ -119,26 +117,24 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
         }
     }
 
-    //isto esta bem?
     @Override
     public void likes(LikesArgs request, StreamObserver<LikesResult> responseObserver) {
         var res = impl.likes(request.getShortId(), request.getPassword());
         if( ! res.isOK() )
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            responseObserver.onNext(LikesResult.newBuilder().build());
+            responseObserver.onNext(LikesResult.newBuilder().addAllUserId(res.value()).build());
             responseObserver.onCompleted();
         }
     }
 
-    //isto esta bem?
     @Override
     public void getFeed(GetFeedArgs request, StreamObserver<GetFeedResult> responseObserver) {
         var res = impl.getFeed(request.getUserId(), request.getPassword());
         if( ! res.isOK() )
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            responseObserver.onNext(GetFeedResult.newBuilder().build());
+            responseObserver.onNext(GetFeedResult.newBuilder().addAllShortId(res.value()).build());
             responseObserver.onCompleted();
         }
     }
