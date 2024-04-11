@@ -41,6 +41,7 @@ public class JavaBlobs implements Blobs {
     public Result<Void> delete(String blobId) {
         shortsToBlobID.remove(blobId);
         blobs.remove(blobId);
+        return Result.ok();
     }
 
 }
