@@ -6,12 +6,13 @@ import tukano.api.java.Result;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class JavaBlobs implements Blobs {
 
     private final Map<String, byte[]> blobs = new HashMap<>();
-
+    private final Map<String, String> shortsToBlobID = new HashMap<>();
 
     private static Logger Log = Logger.getLogger(JavaBlobs.class.getName());
 
@@ -19,6 +20,7 @@ public class JavaBlobs implements Blobs {
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
         blobs.put(blobId, bytes);
+        shortsToBlobID.put(blobId, shorts.getShortIDFromBlob(blobId));
         return Result.ok();
     }
 
@@ -28,4 +30,11 @@ public class JavaBlobs implements Blobs {
         if(bytes == null) return Result.error(Result.ErrorCode.NOT_FOUND);
         return Result.ok(bytes);
     }
+
+
+    public Result<Void> delete(String blobId) {
+        shortsToBlobID.remove(blobId);
+        blobs.remove(blobId);
+    }
+
 }

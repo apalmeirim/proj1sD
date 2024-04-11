@@ -33,6 +33,13 @@ public interface Blobs {
 	Result<byte[]> download(String blobId);
 
 	/**
+	 * Deletes the blob given the blobId given.
+	 * @param blobId the id of the blob;
+	 * @return OK(void)
+	 */
+	Result<Void> delete(String blobId);
+
+	/**
 	 * Downloads a short video blob resource as a result suitable for streaming
 	 * large-sized byte resources 
 	 * 
@@ -43,6 +50,8 @@ public interface Blobs {
 	 * @return (OK,), if the blob exists;
 	 *		   NOT_FOUND, if no blob matches the provided blobId
 	 */
+
+
 	default Result<Void> downloadToSink(String blobId, Consumer<byte[]> sink) {
 		var res = download(blobId);
 		if (!res.isOK())

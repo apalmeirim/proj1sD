@@ -1,6 +1,7 @@
 package tukano.impl.java;
 
 import tukano.api.java.Shorts;
+import tukano.impl.grpc.clients.GrpcShortsClient;
 
 public class ShortsClientFactory {
 

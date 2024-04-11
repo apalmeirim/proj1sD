@@ -1,6 +1,7 @@
 package tukano.impl.java;
 
 import tukano.api.Short;
+import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.java.Users;
@@ -27,9 +28,9 @@ public class JavaShorts implements Shorts {
         var res = users.getUser(userId, password);
         if (res.equals(Result.error( Result.ErrorCode.NOT_FOUND)))
             return Result.error(Result.ErrorCode.NOT_FOUND);
-        if (res.equals(Result.error( Result.ErrorCode.FORBIDDEN)))
+        if (resUser.equals(Result.error( Result.ErrorCode.FORBIDDEN)))
             return Result.error(Result.ErrorCode.FORBIDDEN);
-        if (res.equals(Result.error( Result.ErrorCode.BAD_REQUEST)))
+        if (resUser.equals(Result.error( Result.ErrorCode.BAD_REQUEST)))
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         Short s = new Short("ID_" + shortsIdGenerator, userId, "ID_" + shortsIdGenerator);
         // quando fizermos os blobs alterar os sets!!!
@@ -168,5 +169,10 @@ public class JavaShorts implements Shorts {
         if(res.equals(Result.error(Result.ErrorCode.FORBIDDEN)))
             return false;
         return true;
+    }
+
+
+    public String getShortIDFromBlob(String blobId) {
+        return blobIDs.get(blobId).getShortId();
     }
 }
