@@ -2,6 +2,7 @@ package tukano.impl.java;
 
 import tukano.api.java.Blobs;
 import tukano.api.java.Result;
+import tukano.api.java.Shorts;
 
 
 import java.util.HashMap;
@@ -19,6 +20,11 @@ public class JavaBlobs implements Blobs {
     // falta fazer a comunicacao com os shorts
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
+        Shorts shorts = ShortsClientFactory.getClients();
+        if(shorts.getShortIDFromBlob(blobId) == null)
+            return Result.error(Result.ErrorCode.FORBIDDEN);
+        if(!Arrays.equals(blobs.get(blobId),bytes))
+            return Result.error(Result.ErrorCode.CONFLICT);
         blobs.put(blobId, bytes);
         shortsToBlobID.put(blobId, shorts.getShortIDFromBlob(blobId));
         return Result.ok();

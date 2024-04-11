@@ -25,20 +25,23 @@ public class JavaShorts implements Shorts {
     @Override
     public Result<Short> createShort(String userId, String password) {
         Users users = UsersClientFactory.getClients();
-        var res = users.getUser(userId, password);
-        if (res.equals(Result.error( Result.ErrorCode.NOT_FOUND)))
+        var resUser = users.getUser(userId, password);
+        if (resUser.equals(Result.error( Result.ErrorCode.NOT_FOUND)))
             return Result.error(Result.ErrorCode.NOT_FOUND);
         if (resUser.equals(Result.error( Result.ErrorCode.FORBIDDEN)))
             return Result.error(Result.ErrorCode.FORBIDDEN);
         if (resUser.equals(Result.error( Result.ErrorCode.BAD_REQUEST)))
             return Result.error(Result.ErrorCode.BAD_REQUEST);
-        Short s = new Short("ID_" + shortsIdGenerator, userId, "ID_" + shortsIdGenerator);
+        Short s = new Short("shortID_" + shortsIdGenerator, userId, "blobID_" + shortsIdGenerator);
         // quando fizermos os blobs alterar os sets!!!
         shortsID.put(s.getShortId(),s);
         shortsUser.get(userId).add(s.getShortId());
         likes.put(s.getShortId(),new ArrayList<>());
-        // blobIDs.put("ID_" + shortsIdGenerator, s);
-        Log.info("createShort: ID_" + shortsIdGenerator++);
+        blobIDs.put("blobID_" + shortsIdGenerator, s);
+        Blobs blobs = BlobsClientFactory.getClients();
+        var resBlobs = blobs.upload()
+        //adicionar nos dos blobs
+        Log.info("createShort: shortID_" + shortsIdGenerator++);
         return Result.ok(s);
     }
 
@@ -53,6 +56,8 @@ public class JavaShorts implements Shorts {
         shortsID.remove(shortId);
         likes.remove(shortId);
         shortsUser.get(s.getOwnerId()).remove(shortId);
+        //falta remover no dos blobs
+        blobIDs.remove(s.getBlobUrl());
         return Result.ok();
     }
 

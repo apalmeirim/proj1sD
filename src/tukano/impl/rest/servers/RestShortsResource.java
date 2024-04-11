@@ -16,6 +16,7 @@ public class RestShortsResource implements RestShorts {
     public RestShortsResource() {
         this.impl = new JavaShorts();
     }
+
     @Override
     public Short createShort(String userId, String password) {
         return resultOrThrow( impl.createShort(userId, password));
