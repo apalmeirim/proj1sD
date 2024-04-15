@@ -36,7 +36,21 @@ public class Short {
 	public Short(String shortId, String ownerId, String blobUrl) {
 		this( shortId, ownerId, blobUrl, System.currentTimeMillis(), 0);
 	}
-	
+	public void addLike (String userId){
+		likes.add(userId);
+	}
+
+	public void removeLike(String userId) {
+		likes.remove(userId);
+	}
+
+	public boolean hasLiked (String userId){
+		return likes.contains(userId);
+	}
+
+	public ArrayList<String> getLikes() {
+		return this.likes;
+	}
 	public String getShortId() {
 		return shortId;
 	}

@@ -1,22 +1,35 @@
-package tukano.impl.grpc.clients;
+package tukano.impl.rest.clients;
 
-import io.grpc.ManagedChannelBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import org.glassfish.jersey.client.ClientConfig;
 import tukano.api.Short;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
-import tukano.impl.grpc.generated_java.ShortsGrpc;
+import tukano.api.rest.RestShorts;
 
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class GrpcShortsClient implements Shorts {
-    private static final long GRPC_REQUEST_TIMEOUT = 5000;
-        final ShortsGrpc.ShortsBlockingStub stub;
-    public GrpcShortsClient(URI serverURI) {
-        var channel = ManagedChannelBuilder.forAddress(serverURI.getHost(), serverURI.getPort()).usePlaintext().build();
-        stub = ShortsGrpc.newBlockingStub( channel ).withDeadlineAfter(GRPC_REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
+public class RestShortsClient implements Shorts {
+
+    protected static final int MAX_RETRIES = 10;
+    protected static final int RETRY_SLEEP = 1000;
+    final URI serverURI;
+    final Client client;
+    final ClientConfig config;
+
+    final WebTarget target;
+
+    public RestShortsClient( URI serverURI ) {
+        this.serverURI = serverURI;
+        this.config = new ClientConfig();
+        this.client = ClientBuilder.newClient(config);
+
+        target = client.target( serverURI ).path( RestShorts.PATH );
     }
+
 
     @Override
     public Result<Short> createShort(String userId, String password) {

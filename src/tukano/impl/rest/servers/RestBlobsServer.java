@@ -7,23 +7,23 @@ import java.util.logging.Logger;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-public class RestShortsServer {
+public class RestBlobsServer {
 
-    private static Logger Log = Logger.getLogger(RestShortsServer.class.getName());
+    private static Logger Log = Logger.getLogger(RestBlobsServer.class.getName());
 
     static {
         System.setProperty("java.net.preferIPv4Stack", "true");
     }
 
-    public static final int PORT = 4567;
-    public static final String SERVICE = "shorts";
+    public static final int PORT = 5678;
+    public static final String SERVICE = "blobs";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 
     public static void main(String[] args) {
         try {
 
             ResourceConfig config = new ResourceConfig();
-            config.register( RestShortsResource.class );
+            config.register(  RestUsersResource.class );
 
             String ip = InetAddress.getLocalHost().getHostAddress();
             String serverURI = String.format(SERVER_URI_FMT, ip, PORT);

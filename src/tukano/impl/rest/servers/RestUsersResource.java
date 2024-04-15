@@ -46,7 +46,7 @@ public class RestUsersResource implements RestUsers {
 
 	@Override
 	public List<User> searchUsers(String pattern) {
-		throw new RuntimeException("Not Implemented...");
+		return resultOrThrow( impl.searchUsers(pattern));
 	}
 
 	/**

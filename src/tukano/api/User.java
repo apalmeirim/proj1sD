@@ -1,9 +1,16 @@
 package tukano.api;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+@Entity
 public class User {
 	
 	private String pwd;
 	private String email;
+	@Id
 	private String userId;
 	private String displayName;
 

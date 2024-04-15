@@ -5,19 +5,20 @@ import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.java.Users;
+import tukano.persistence.Hibernate;
 
 import java.util.*;
 import java.util.logging.Logger;
 
 public class JavaShorts implements Shorts {
-    private final Map<String, Short> shortsID = new HashMap<>();
-    private final Map<String, List<String>> shortsUser = new HashMap<>();
-    private final Map<String, List<String>> followers = new HashMap<>();
-    private final Map<String, List<String>> following = new HashMap<>();
-    private final Map<String, List<String>> likes = new HashMap<>();
+    //private final Map<String, Short> shortsID = new HashMap<>();
+    //private final Map<String, List<String>> shortsUser = new HashMap<>();
+    //private final Map<String, List<String>> followers = new HashMap<>();
+    //private final Map<String, List<String>> following = new HashMap<>();
+    //private final Map<String, List<String>> likes = new HashMap<>();
 
     // cada vez que criamos um short temos de associar um blobId a ele
-    private final Map<String, Short> blobIDs = new HashMap<>();
+    //private final Map<String, Short> blobIDs = new HashMap<>();
 
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
     private int shortsIdGenerator = 1;
@@ -32,14 +33,11 @@ public class JavaShorts implements Shorts {
             return Result.error(Result.ErrorCode.FORBIDDEN);
         if (resUser.equals(Result.error( Result.ErrorCode.BAD_REQUEST)))
             return Result.error(Result.ErrorCode.BAD_REQUEST);
-        Short s = new Short("shortID_" + shortsIdGenerator, userId, "blobID_" + shortsIdGenerator);
+        Short s = new Short("shortID_" + shortsIdGenerator, userId, "blobURL" + shortsIdGenerator);
         // quando fizermos os blobs alterar os sets!!!
-        shortsID.put(s.getShortId(),s);
-        shortsUser.get(userId).add(s.getShortId());
-        likes.put(s.getShortId(),new ArrayList<>());
-        blobIDs.put("blobID_" + shortsIdGenerator, s);
-        Blobs blobs = BlobsClientFactory.getClients();
-        var resBlobs = blobs.upload()
+        Hibernate.getInstance().persist(s);
+        //Blobs blobs = BlobsClientFactory.getClients();
+        //var resBlobs = blobs.upload();
         //adicionar nos dos blobs
         Log.info("createShort: shortID_" + shortsIdGenerator++);
         return Result.ok(s);
@@ -47,11 +45,12 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<Void> deleteShort(String shortId, String password) {
-        Short s = shortsID.get(shortId);
+        var res = getShort(shortId);
+        if (!res.isOK())
+            return Result.error(res.error());
+        Short s = res.value();
         if(!checkPwd(s.getOwnerId(), password))
             return Result.error(Result.ErrorCode.FORBIDDEN);
-        if (!shortsID.containsKey(shortId))
-            return Result.error(Result.ErrorCode.NOT_FOUND);
         Log.info("deleteShort : shortId = " + shortId);
         shortsID.remove(shortId);
         likes.remove(shortId);
@@ -63,21 +62,21 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<Short> getShort(String shortId) {
-        Short s = shortsID.get(shortId);
-        if (s == null)
+        var res = Hibernate.getInstance().sql("SELECT * FROM Short s WHERE s.shortId LIKE '"+ shortId +"'", Short.class);
+        if (res.isEmpty())
             return Result.error(Result.ErrorCode.NOT_FOUND);
-        return Result.ok(s);
+        return Result.ok(res.get(0));
     }
 
     @Override
     public Result<List<String>> getShorts(String userId) {
-        List<String> shortsIDs = shortsUser.get(userId);
-        if (shortsIDs == null)
+        List<Short> shortsIDs = Hibernate.getInstance().sql("SELECT * FROM Short s WHERE s.ownerId LIKE '"+ userId +"'", Short.class);
+        if (shortsIDs.isEmpty())
             return Result.error(Result.ErrorCode.NOT_FOUND);
         Iterator<String> it = shortsIDs.iterator();
         List<String> allShorts = new ArrayList<>();
         while(it.hasNext()){
-            Short s = shortsID.get(it.next());
+            Short s = it.next();
             allShorts.add(s.getShortId() + ", " + s.getTotalLikes());
         }
         return Result.ok(shortsIDs);
@@ -102,11 +101,12 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<List<String>> followers(String userId, String password) {
-        if(!shortsUser.containsKey(userId))
-            return Result.error(Result.ErrorCode.NOT_FOUND);
-        if(!checkPwd(userId,password))
-            return Result.error(Result.ErrorCode.FORBIDDEN);
-        return Result.ok(followers.get(userId));
+        Users users = UsersClientFactory.getClients();
+        var res = users.getUser(userId, password);
+        if(!res.isOK())
+            return Result.error(res.error());
+        User user = res.value();
+        return Result.ok(user.getFollowers());
     }
 
     @Override
@@ -115,17 +115,18 @@ public class JavaShorts implements Shorts {
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         if(!checkPwd(userId,password))
             return Result.error(Result.ErrorCode.FORBIDDEN);
-        if(!(likes.containsKey(shortId)) || (!isLiked && !likes.get(shortId).contains(userId)))
+        var res = getShort(shortId);
+        if( !res.isOK() || (!isLiked && !res.value().getLikes().contains(userId)))
             return Result.error(Result.ErrorCode.NOT_FOUND);
-        if(isLiked && likes.get(shortId).contains(userId))
+        if(isLiked && res.value().getLikes().contains(userId))
             return Result.error(Result.ErrorCode.CONFLICT);
-        Short s = shortsID.get(shortId);
+        Short s = res.value();
         if(isLiked) {
-            likes.get(shortId).add(userId);
+            s.addLike(userId);
             s.setTotalLikes(s.getTotalLikes() + 1);
         }
         else {
-            likes.get(shortId).remove(userId);
+            s.removeLike(userId);
             s.setTotalLikes(s.getTotalLikes() - 1);
         }
         return Result.ok();
@@ -178,6 +179,6 @@ public class JavaShorts implements Shorts {
 
 
     public String getShortIDFromBlob(String blobId) {
-        return blobIDs.get(blobId).getShortId();
+        return null;//blobIDs.get(blobId).getShortId();
     }
 }
