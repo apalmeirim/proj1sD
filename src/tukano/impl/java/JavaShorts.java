@@ -163,7 +163,10 @@ public class JavaShorts implements Shorts {
             while(shortsIt.hasNext()) {
                 feedShorts.add(getShort(shortsIt.next()).value());
             }
-
+        }
+        Iterator<String> usersShortsIt = getShorts(userId).value().iterator();
+        while(usersShortsIt.hasNext()) {
+            feedShorts.add(getShort(usersShortsIt.next()).value());
         }
         feedShorts.sort(Comparator.comparingLong(Short::getTimestamp));
         List<String> feed = new ArrayList<>();

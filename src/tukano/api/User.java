@@ -1,4 +1,6 @@
 package tukano.api;
+
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -13,7 +15,9 @@ public class User {
 	@Id
 	private String userId;
 	private String displayName;
+	@ElementCollection
 	private ArrayList<String> followers;
+	@ElementCollection
 	private ArrayList<String> following;
 
 	public User() {}
