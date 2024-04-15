@@ -1,12 +1,14 @@
 package tukano.impl.java;
 
 import tukano.api.Short;
+import tukano.api.User;
 import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.java.Users;
 import tukano.persistence.Hibernate;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -52,11 +54,7 @@ public class JavaShorts implements Shorts {
         if(!checkPwd(s.getOwnerId(), password))
             return Result.error(Result.ErrorCode.FORBIDDEN);
         Log.info("deleteShort : shortId = " + shortId);
-        shortsID.remove(shortId);
-        likes.remove(shortId);
-        shortsUser.get(s.getOwnerId()).remove(shortId);
-        //falta remover no dos blobs
-        blobIDs.remove(s.getBlobUrl());
+        Hibernate.getInstance().delete(s);
         return Result.ok();
     }
 
@@ -73,28 +71,32 @@ public class JavaShorts implements Shorts {
         List<Short> shortsIDs = Hibernate.getInstance().sql("SELECT * FROM Short s WHERE s.ownerId LIKE '"+ userId +"'", Short.class);
         if (shortsIDs.isEmpty())
             return Result.error(Result.ErrorCode.NOT_FOUND);
-        Iterator<String> it = shortsIDs.iterator();
+        Iterator<Short> it = shortsIDs.iterator();
         List<String> allShorts = new ArrayList<>();
         while(it.hasNext()){
             Short s = it.next();
             allShorts.add(s.getShortId() + ", " + s.getTotalLikes());
         }
-        return Result.ok(shortsIDs);
+        return Result.ok(allShorts);
     }
 
     @Override
     public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
         if(!checkPwd(userId1, password))
             return Result.error(Result.ErrorCode.FORBIDDEN);
-        if(!(shortsUser.containsKey(userId1) && shortsUser.containsKey(userId2)))
+        var res1 = Hibernate.getInstance().sql("SELECT * FROM User u WHERE u.userId LIKE '"+ userId1 +"'", User.class);
+        var res2 = Hibernate.getInstance().sql("SELECT * FROM User u WHERE u.userId LIKE '"+ userId2 +"'", User.class);
+        if(res1.isEmpty() || res2.isEmpty())
             return Result.error(Result.ErrorCode.NOT_FOUND);
+        User user1 = res1.get(0);
+        User user2 = res2.get(0);
         if(!isFollowing) {
-            followers.get(userId2).add(userId1);
-            following.get(userId1).add(userId2);
+            user1.addFollowing(user2.getUserId());
+            user2.addFollower(user1.getUserId());
         }
         else {
-            followers.get(userId2).remove(userId1);
-            following.get(userId1).remove(userId2);
+            user1.removeFollowing(user2.getUserId());
+            user2.removeFollower(user1.getUserId());
         }
         return Result.ok();
     }
@@ -134,27 +136,34 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<List<String>> likes(String shortId, String password) {
-        Short s = shortsID.get(shortId);
-        if(s == null)
-            return Result.error(Result.ErrorCode.NOT_FOUND);
-        if(!checkPwd(s.getOwnerId(), password))
-            return Result.error(Result.ErrorCode.FORBIDDEN);
-        return Result.ok(likes.get(shortId));
+        var res = getShort(shortId);
+        if(!res.isOK())
+            return Result.error(res.error());
+        Short s = res.value();
+        Users users = UsersClientFactory.getClients();
+        var resUser = users.getUser(s.getOwnerId(), password);
+        if(!resUser.isOK())
+            return Result.error(resUser.error());
+        return Result.ok(s.getLikes());
     }
 
     @Override
     public Result<List<String>> getFeed(String userId, String password) {
-        if(shortsUser.containsKey(userId))
-            return Result.error(Result.ErrorCode.NOT_FOUND);
-        if(!checkPwd(userId,password))
-            return Result.error(Result.ErrorCode.FORBIDDEN);
+        Users users = UsersClientFactory.getClients();
+        var res = users.getUser(userId, password);
+        if(!res.isOK())
+            return Result.error(res.error());
+        User user = res.value();
         List<Short> feedShorts = new ArrayList<>();
-        Iterator<String> it = following.get(userId).iterator();
-        while(it.hasNext()){
-            String itID = it.next();
-            Iterator<String> itShorts = shortsUser.get(itID).iterator();
-            while(itShorts.hasNext())
-                feedShorts.add(shortsID.get(itShorts.next()));
+        List<String> following = user.getFollowing();
+        Iterator<String> followingIt = following.iterator();
+        while(followingIt.hasNext()) {
+            List<String> shorts = getShorts(followingIt.next()).value();
+            Iterator<String> shortsIt = shorts.iterator();
+            while(shortsIt.hasNext()) {
+                feedShorts.add(getShort(shortsIt.next()).value());
+            }
+
         }
         feedShorts.sort(Comparator.comparingLong(Short::getTimestamp));
         List<String> feed = new ArrayList<>();

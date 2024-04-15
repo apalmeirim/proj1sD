@@ -3,6 +3,8 @@ package tukano.api;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import java.util.ArrayList;
+
 /**
  * Represents a Short video uploaded by an user.
  * 
@@ -21,6 +23,7 @@ public class Short {
 	String blobUrl;
 	long timestamp;
 	int totalLikes;
+	ArrayList<String> likes;
 
 	public Short() {}
 	
@@ -31,6 +34,7 @@ public class Short {
 		this.blobUrl = blobUrl;
 		this.timestamp = timestamp;
 		this.totalLikes = totalLikes;
+		this.likes = new ArrayList<String>();
 	}
 
 	public Short(String shortId, String ownerId, String blobUrl) {

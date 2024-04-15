@@ -13,6 +13,8 @@ public class User {
 	@Id
 	private String userId;
 	private String displayName;
+	private ArrayList<String> followers;
+	private ArrayList<String> following;
 
 	public User() {}
 	
@@ -21,6 +23,8 @@ public class User {
 		this.email = email;
 		this.userId = userId;
 		this.displayName = displayName;
+		this.followers = new ArrayList<String>();
+		this.following = new ArrayList<String>();
 	}
 
 	public String getUserId() {
@@ -47,6 +51,22 @@ public class User {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
+
+	public void addFollower(String userId) {
+		followers.add(userId);
+	}
+
+	public void removeFollower(String userId) {
+		followers.remove(userId);
+	}
+
+	public void addFollowing(String userId) {
+		following.add(userId);
+	}
+
+	public void removeFollowing(String userId) {
+		following.remove(userId);
+	}
 	
 	public String userId() {
 		return userId;
@@ -63,7 +83,15 @@ public class User {
 	public String displayName() {
 		return displayName;
 	}
-	
+
+	public ArrayList<String> getFollowers() {
+		return this.followers;
+	}
+
+	public ArrayList<String> getFollowing() {
+		return this.following;
+	}
+
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", pwd=" + pwd + ", email=" + email + ", displayName=" + displayName + "]";
