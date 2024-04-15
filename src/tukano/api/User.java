@@ -1,6 +1,5 @@
 package tukano.api;
 
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -14,10 +13,7 @@ public class User {
 	@Id
 	private String userId;
 	private String displayName;
-	@ElementCollection
-	private ArrayList<String> followers;
-	@ElementCollection
-	private ArrayList<String> following;
+
 
 	public User() {}
 	
@@ -55,22 +51,6 @@ public class User {
 		this.displayName = displayName;
 	}
 
-	public void addFollower(String userId) {
-		followers.add(userId);
-	}
-
-	public void removeFollower(String userId) {
-		followers.remove(userId);
-	}
-
-	public void addFollowing(String userId) {
-		following.add(userId);
-	}
-
-	public void removeFollowing(String userId) {
-		following.remove(userId);
-	}
-	
 	public String userId() {
 		return userId;
 	}

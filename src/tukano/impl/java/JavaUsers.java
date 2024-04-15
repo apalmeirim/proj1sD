@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import tukano.api.Follow;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
 import tukano.api.User;
@@ -28,7 +29,7 @@ public class JavaUsers implements Users {
 		}
 
 		// Insert user, checking if name already exists
-		if(!Hibernate.getInstance().sql("SELECT * From User u WHERE u.userId LIKE '" + user.getUserId() + "'", User.class).isEmpty()) {
+		if(!Hibernate.getInstance().sql("SELECT * From User WHERE userId LIKE '" + user.getUserId() + "'", User.class).isEmpty()) {
 			Log.info("User already exists.");
 			return Result.error( ErrorCode.CONFLICT);
 		}
@@ -47,7 +48,7 @@ public class JavaUsers implements Users {
 			return Result.error( ErrorCode.BAD_REQUEST);
 		}
 		
-		var res = Hibernate.getInstance().sql("SELECT * FROM User u WHERE u.userId LIKE '" + userId + "'", User.class);
+		var res = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId LIKE '" + userId + "'", User.class);
 		// Check if user exists 
 		if(res.isEmpty()) {
 			Log.info("User does not exist.");
@@ -103,7 +104,7 @@ public class JavaUsers implements Users {
 	public Result<List<User>> searchUsers(String pattern) {
 		if(pattern == null || pattern.isEmpty())
 			return Result.error(ErrorCode.BAD_REQUEST);
-		List<User> users = Hibernate.getInstance().sql("SELECT * FROM User u", User.class);
+		List<User> users = Hibernate.getInstance().sql("SELECT * FROM User", User.class);
 		List<User> res = new ArrayList<>();
 		for(int i = 0; i < users.size(); i++){
 			if(users.get(i).getUserId().toLowerCase().contains(pattern.toLowerCase()))

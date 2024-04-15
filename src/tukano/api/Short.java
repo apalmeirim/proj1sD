@@ -18,12 +18,11 @@ import java.util.ArrayList;
 public class Short {
 	
 	@Id
-	String shortId;
-	String ownerId;
-	String blobUrl;
-	long timestamp;
-	int totalLikes;
-	ArrayList<String> likes;
+	private String shortId;
+	private String ownerId;
+	private String blobUrl;
+	private long timestamp;
+	private int totalLikes;
 
 	public Short() {}
 	
@@ -34,27 +33,12 @@ public class Short {
 		this.blobUrl = blobUrl;
 		this.timestamp = timestamp;
 		this.totalLikes = totalLikes;
-		this.likes = new ArrayList<String>();
 	}
 
 	public Short(String shortId, String ownerId, String blobUrl) {
 		this( shortId, ownerId, blobUrl, System.currentTimeMillis(), 0);
 	}
-	public void addLike (String userId){
-		likes.add(userId);
-	}
 
-	public void removeLike(String userId) {
-		likes.remove(userId);
-	}
-
-	public boolean hasLiked (String userId){
-		return likes.contains(userId);
-	}
-
-	public ArrayList<String> getLikes() {
-		return this.likes;
-	}
 	public String getShortId() {
 		return shortId;
 	}
