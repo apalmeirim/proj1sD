@@ -33,10 +33,6 @@ public class JavaShorts implements Shorts {
         String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
         Short s = new Short("shortID_" + (resShorts.size() + 1), userId, blob + (resShorts.size() + 1));
         Hibernate.getInstance().persist(s);
-        //Blobs blobs = BlobsClientFactory.getClients();
-        //var resBlobs = blobs.upload();
-        //adicionar nos dos blobs
-        Log.info("createShort: shortID_" + shortsIdGenerator++);
         return Result.ok(s);
     }
 
@@ -109,7 +105,9 @@ public class JavaShorts implements Shorts {
         if(!checkPwd(userId,password))
             return Result.error(Result.ErrorCode.FORBIDDEN);
         var res = getShort(shortId);
-        if( !res.isOK() || (!isLiked && !res.value().getLikes().contains(userId)))
+        var resliked = Hibernate.getInstance().sql("SELECT * FROM Like l WHERE l.shortId LIKE '"+ shortId +"' " +
+                "AND l.userId LIKE '"+ userId +"'", Like.class);
+        if( !res.isOK() || (!isLiked && resliked.isEmpty()))
             return Result.error(Result.ErrorCode.NOT_FOUND);
         if(isLiked && !resliked.isEmpty())
             return Result.error(Result.ErrorCode.CONFLICT);
@@ -119,7 +117,8 @@ public class JavaShorts implements Shorts {
             s.setTotalLikes(s.getTotalLikes() + 1);
         }
         else {
-            s.removeLike(userId);
+            Like l = resliked.get(0);
+            Hibernate.getInstance().delete(l);
             s.setTotalLikes(s.getTotalLikes() - 1);
         }
         return Result.ok();
@@ -146,10 +145,10 @@ public class JavaShorts implements Shorts {
         if(!res.isOK())
             return Result.error(res.error());
         List<Short> feedShorts = new ArrayList<>();
-        List<String> following = user.getFollowing();
-        Iterator<String> followingIt = following.iterator();
+        List<Follow> following = Hibernate.getInstance().sql("SELECT f.followed FROM Follow f WHERE f.follower LIKE'" + userId + "'", Follow.class);
+        Iterator<Follow> followingIt = following.iterator();
         while(followingIt.hasNext()) {
-            List<String> shorts = getShorts(followingIt.next()).value();
+            List<String> shorts = Hibernate.getInstance().sql("SELECT s.shortId FROM Short s WHERE s.ownerId LIKE '"+ followingIt.next().getFollowedUser() +"'", String.class);
             Iterator<String> shortsIt = shorts.iterator();
             while(shortsIt.hasNext()) {
                 feedShorts.add(getShort(shortsIt.next()).value());

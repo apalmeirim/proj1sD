@@ -3,7 +3,6 @@ package tukano.api;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import java.util.ArrayList;
 
 @Entity
 public class User {
@@ -22,8 +21,6 @@ public class User {
 		this.email = email;
 		this.userId = userId;
 		this.displayName = displayName;
-		this.followers = new ArrayList<String>();
-		this.following = new ArrayList<String>();
 	}
 
 	public String getUserId() {
@@ -65,14 +62,6 @@ public class User {
 	
 	public String displayName() {
 		return displayName;
-	}
-
-	public ArrayList<String> getFollowers() {
-		return this.followers;
-	}
-
-	public ArrayList<String> getFollowing() {
-		return this.following;
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import tukano.persistence.Hibernate;
 public class JavaUsers implements Users {
 	//private final Map<String,User> users = new HashMap<>();
 
+
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
 	@Override
