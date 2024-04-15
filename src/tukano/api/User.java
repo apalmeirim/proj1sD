@@ -4,7 +4,6 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 @Entity

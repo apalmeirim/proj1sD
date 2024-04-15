@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import tukano.impl.java.Discovery;
 
 public class RestShortsServer {
 
@@ -29,6 +30,7 @@ public class RestShortsServer {
             String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
             JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config);
 
+            Discovery.getInstance().announce(SERVICE, serverURI);
             Log.info(String.format("%s Server ready @ %s\n", SERVICE, serverURI));
 
             // More code can be executed here...

@@ -110,7 +110,7 @@ class DiscoveryImpl implements Discovery {
         // or wait if necessary to have the number of entries requested...
         while(this.knownUrisMap.get(serviceName) == null || this.knownUrisMap.get(serviceName).size() < minEntries) {
             try {
-                Thread.sleep(DISCOVERY_RETRY_TIMEOUT);
+                wait(DISCOVERY_RETRY_TIMEOUT);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
