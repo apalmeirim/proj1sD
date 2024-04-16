@@ -1,17 +1,14 @@
-package tukano.impl.java;
+ package tukano.impl.java;
 
 import tukano.api.Follow;
 import tukano.api.Likes;
 import tukano.api.Short;
-import tukano.api.User;
 import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.java.Users;
 import tukano.persistence.Hibernate;
 
-import java.lang.reflect.Array;
-import java.net.URI;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -27,7 +24,9 @@ public class JavaShorts implements Shorts {
         var resUser = users.getUser(userId, password);
         if(!resUser.isOK()) return Result.error(resUser.error());
         String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
-        Short s = new Short("shortID_" + UUID.randomUUID(), userId, blob + UUID.randomUUID());
+        UUID blobsId = UUID.randomUUID();
+        Short s = new Short("shortID_" + UUID.randomUUID(), userId, blob + "/" + blobsId);
+        blobs.upload(blobsId.toString(), (blob + blobsId).getBytes());
         Hibernate.getInstance().persist(s);
         return Result.ok(s);
     }
@@ -179,7 +178,9 @@ public class JavaShorts implements Shorts {
     }
 
 
-    public String getShortIDFromBlob(String blobId) {
-        return null;//blobIDs.get(blobId).getShortId();
+    public Result<String> hasBlobId (String blobId) {
+        var res = Hibernate.getInstance().sql("SELECT * FROM Short WHERE blob LIKE '%" + blobId + "%'", Short.class);
+        if(res.isEmpty()) return Result.error(Result.ErrorCode.FORBIDDEN);
+        return Result.ok(res.get(0).getBlobUrl());
     }
 }

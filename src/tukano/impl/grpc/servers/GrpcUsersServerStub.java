@@ -6,6 +6,7 @@ import static tukano.impl.grpc.common.DataModelAdaptor.User_to_GrpcUser;
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.stub.StreamObserver;
+import tukano.api.User;
 import tukano.api.java.Result;
 import tukano.api.java.Users;
 import tukano.impl.grpc.generated_java.UsersGrpc;
@@ -76,7 +77,15 @@ public class GrpcUsersServerStub implements UsersGrpc.AsyncService, BindableServ
 
 	@Override
     public void searchUsers(SearchUserArgs request, StreamObserver<GrpcUser> responseObserver) {
-		throw new RuntimeException("Not Implemented...");
+		var res = impl.searchUsers(request.getPattern());
+		if( ! res.isOK() )
+			responseObserver.onError(errorCodeToStatus(res.error()));
+		else {
+			for(User user : res.value()){
+				responseObserver.onNext(User_to_GrpcUser(user));
+			}
+			responseObserver.onCompleted();
+		}
   }
     
     protected static Throwable errorCodeToStatus( Result.ErrorCode error ) {

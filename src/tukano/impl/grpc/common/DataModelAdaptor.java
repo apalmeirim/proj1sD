@@ -9,10 +9,10 @@ public class DataModelAdaptor {
 
 	public static User GrpcUser_to_User( GrpcUser from )  {
 		return new User( 
-				from.getUserId(), 
-				from.getPassword(), 
-				from.getEmail(), 
-				from.getDisplayName());
+				emptyStingToNull(from.getUserId()),
+				emptyStingToNull(from.getPassword()),
+				emptyStingToNull(from.getEmail()),
+				emptyStingToNull(from.getDisplayName()));
 	}
 
 	public static GrpcUser User_to_GrpcUser( User from )  {
