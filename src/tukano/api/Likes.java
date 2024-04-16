@@ -5,7 +5,7 @@ import jakarta.persistence.Id;
 
 
 @Entity
-public class Like {
+public class Likes {
 
     @Id
     private String shortId;

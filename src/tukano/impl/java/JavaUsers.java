@@ -103,7 +103,7 @@ public class JavaUsers implements Users {
 
 	@Override
 	public Result<List<User>> searchUsers(String pattern) {
-		if(pattern == null || pattern.isEmpty())
+		if(pattern == null)
 			return Result.error(ErrorCode.BAD_REQUEST);
 		List<User> users = Hibernate.getInstance().sql("SELECT * FROM User", User.class);
 		List<User> res = new ArrayList<>();

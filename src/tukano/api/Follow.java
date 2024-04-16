@@ -19,6 +19,7 @@ public class Follow {
         this.followerUser = followerUser;
     }
 
+
     public String getFollowedUser() {
         return followedUser;
     }

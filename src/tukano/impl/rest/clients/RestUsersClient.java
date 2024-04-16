@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.core.GenericType;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.Client;
@@ -145,8 +146,26 @@ public class RestUsersClient implements Users {
 	}
 
 	@Override
-	public Result<List<User>> searchUsers(String pattern) {
-		throw new RuntimeException("Not Implemented...");
+	public Result<List<User>> searchUsers(String userId) {
+		WebTarget target = client.target(serverURI).path(RestUsers.PATH);
+		for (int i = 0; i < MAX_RETRIES; i++)
+			try {
+				Response r = target.path( userId )
+						.queryParam(RestUsers.QUERY, userId)
+						.request()
+						.accept(MediaType.APPLICATION_JSON)
+						.get();
+
+				if (r.getStatus() == Status.OK.getStatusCode() && r.hasEntity())
+					// SUCCESS
+					return Result.ok(r.readEntity(new GenericType<List<User>>() {}));
+				else {
+					return Result.error(getErrorCodeFrom(r.getStatus()));
+				}
+			} catch (ProcessingException x) {
+				Sleep.ms(RETRY_SLEEP);
+			}
+		return null; // Report failure
 	}
 
 	public static ErrorCode getErrorCodeFrom(int status) {
