@@ -1,11 +1,9 @@
 package tukano.impl.java;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
+import org.checkerframework.checker.nullness.qual.EnsuresKeyFor;
 import tukano.api.Follow;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
@@ -103,13 +101,15 @@ public class JavaUsers implements Users {
 
 	@Override
 	public Result<List<User>> searchUsers(String pattern) {
-		if(pattern == null)
-			return Result.error(ErrorCode.BAD_REQUEST);
 		List<User> users = Hibernate.getInstance().sql("SELECT * FROM User", User.class);
+		if(pattern == null || pattern.trim().isEmpty())
+			return Result.ok(Collections.emptyList());
 		List<User> res = new ArrayList<>();
-		for(int i = 0; i < users.size(); i++){
-			if(users.get(i).getUserId().toLowerCase().contains(pattern.toLowerCase()))
-				res.add(users.get(i));
+		Iterator<User> usersIt = users.iterator();
+		while(usersIt.hasNext()) {
+			User user = usersIt.next();
+			if(user.getUserId().toLowerCase().contains(pattern.toLowerCase()))
+				res.add(user);
 		}
 		return Result.ok(res);
 	}

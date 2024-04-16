@@ -10,7 +10,7 @@ public class Follow {
 
     @Id
     private String followedUser;
-    @Id
+
     private String followerUser;
 
     public Follow() {

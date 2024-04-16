@@ -20,20 +20,13 @@ public class JavaShorts implements Shorts {
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
 
-
     @Override
     public Result<Short> createShort(String userId, String password) {
         Users users = UsersClientFactory.getClients();
         var resUser = users.getUser(userId, password);
-        if (resUser.equals(Result.error( Result.ErrorCode.NOT_FOUND)))
-            return Result.error(Result.ErrorCode.NOT_FOUND);
-        if (resUser.equals(Result.error( Result.ErrorCode.FORBIDDEN)))
-            return Result.error(Result.ErrorCode.FORBIDDEN);
-        if (resUser.equals(Result.error( Result.ErrorCode.BAD_REQUEST)))
-            return Result.error(Result.ErrorCode.BAD_REQUEST);
-        var resShorts = Hibernate.getInstance().sql("SELECT * FROM Short", Short.class);
+        if(!resUser.isOK()) return Result.error(resUser.error());
         String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
-        Short s = new Short("shortID_" + (resShorts.size() + 1), userId, blob + (resShorts.size() + 1));
+        Short s = new Short("shortID_" + UUID.randomUUID(), userId, blob + UUID.randomUUID());
         Hibernate.getInstance().persist(s);
         return Result.ok(s);
     }
@@ -61,6 +54,11 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<List<String>> getShorts(String userId) {
+        Users users = UsersClientFactory.getClients();
+        var res = users.searchUsers(userId);
+        if(res.equals(Result.error(Result.ErrorCode.BAD_REQUEST))) {
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
         List<String> shortsIDs = Hibernate.getInstance().sql("SELECT shortId FROM Short WHERE ownerId LIKE '"+ userId + "'", String.class);
         return Result.ok(shortsIDs);
     }
@@ -81,11 +79,9 @@ public class JavaShorts implements Shorts {
             Follow follow = res.get(0);
             Hibernate.getInstance().delete(follow);
         }
-        else if(isFollowing){
-            if(res.isEmpty()) { 
-                Hibernate.getInstance().persist(new Follow(userId2, userId1));
-            }
-            else return Result.error(Result.ErrorCode.CONFLICT);
+        else if(isFollowing) {
+            if (!res.isEmpty()) return Result.error(Result.ErrorCode.CONFLICT);
+            else Hibernate.getInstance().persist(new Follow(userId2, userId1));
         }
         return Result.ok();
     }
@@ -117,11 +113,13 @@ public class JavaShorts implements Shorts {
         if(isLiked) {
             Hibernate.getInstance().persist(new Likes(shortId,userId));
             s.setTotalLikes(s.getTotalLikes() + 1);
+            Hibernate.getInstance().update(s);
         }
         else {
             Likes l = resliked.get(0);
             Hibernate.getInstance().delete(l);
             s.setTotalLikes(s.getTotalLikes() - 1);
+            Hibernate.getInstance().update(s);
         }
         return Result.ok();
     }
