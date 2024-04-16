@@ -12,7 +12,10 @@ public class Likes {
     @Id
     private String userId;
 
-    public Like(String shortId, String userId){
+    public Likes(){
+
+    }
+    public Likes(String shortId, String userId){
         this.shortId = shortId;
         this.userId = userId;
     }

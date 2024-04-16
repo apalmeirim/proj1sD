@@ -1,7 +1,7 @@
 package tukano.impl.java;
 
 import tukano.api.Follow;
-import tukano.api.Like;
+import tukano.api.Likes;
 import tukano.api.Short;
 import tukano.api.User;
 import tukano.api.java.Blobs;
@@ -96,7 +96,7 @@ public class JavaShorts implements Shorts {
         var res = users.getUser(userId, password);
         if(!res.isOK())
             return Result.error(res.error());
-        List<String> followers = Hibernate.getInstance().sql("SELECT f.followerUser FROM Follow f WHERE f.followedUser LIKE '"+ userId +"'", String.class);
+        List<String> followers = Hibernate.getInstance().sql("SELECT followerUser FROM Follow f WHERE f.followedUser LIKE '"+ userId +"'", String.class);
         return Result.ok(followers);
     }
 
