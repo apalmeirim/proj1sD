@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.util.logging.Logger;
 
 import io.grpc.ServerBuilder;
-import tukano.api.java.Users;
+import tukano.api.java.Shorts;
 
 public class GrpcShortsServer {
     public static final int PORT = 14567;
@@ -20,7 +20,7 @@ public class GrpcShortsServer {
         var server = ServerBuilder.forPort(PORT).addService(stub).build();
         var serverURI = String.format(SERVER_BASE_URI, InetAddress.getLocalHost().getHostAddress(), PORT, GRPC_CTX);
 
-        Log.info(String.format("%s gRPC Server ready @ %s\n", Users.NAME, serverURI));
+        Log.info(String.format("%s gRPC Server ready @ %s\n", Shorts.NAME, serverURI));
         server.start().awaitTermination();
     }
 }

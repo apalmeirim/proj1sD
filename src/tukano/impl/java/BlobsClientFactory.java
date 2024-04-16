@@ -10,6 +10,7 @@ public class BlobsClientFactory {
         var serverURI = Discovery.getInstance().knownUrisOf("blobs", 1)[0];
         if (serverURI.toString().contains("rest")) return new RestBlobsClient(serverURI);
         else return new GrpcBlobsClient(serverURI);
+
     }
 
 

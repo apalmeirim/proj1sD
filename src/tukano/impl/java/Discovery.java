@@ -9,6 +9,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -65,7 +66,7 @@ class DiscoveryImpl implements Discovery {
 
     private static Discovery singleton;
 
-    private final Map<String, Set<URI>> knownUrisMap = new HashMap<>();
+    private final Map<String, Set<URI>> knownUrisMap = new ConcurrentHashMap<>();
 
     synchronized static Discovery getInstance() {
         if (singleton == null) {
@@ -105,20 +106,20 @@ class DiscoveryImpl implements Discovery {
 
 
     @Override
-    public URI[] knownUrisOf(String serviceName, int minEntries) {
-        // TODO: use already stored annoucements,
-        // or wait if necessary to have the number of entries requested...
-        while(this.knownUrisMap.get(serviceName) == null || this.knownUrisMap.get(serviceName).size() < minEntries) {
-            try {
-                wait(DISCOVERY_RETRY_TIMEOUT);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    synchronized public URI[] knownUrisOf(String serviceName, int minEntries) {
+            // TODO: use already stored annoucements,
+            // or wait if necessary to have the number of entries requested...
+            while (this.knownUrisMap.get(serviceName) == null || this.knownUrisMap.get(serviceName).size() < minEntries) {
+                try {
+                    wait(DISCOVERY_RETRY_TIMEOUT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        Set<URI> knownUris = knownUrisMap.get(serviceName);
-        return knownUris.toArray(new URI[knownUris.size()]);
-    }
+            Set<URI> knownUris = knownUrisMap.get(serviceName);
+            return knownUris.toArray(new URI[knownUris.size()]);
 
+    }
     private void startListener() {
         Log.info(String.format("Starting discovery on multicast group: %s, port: %d\n", DISCOVERY_ADDR.getAddress(),
                 DISCOVERY_ADDR.getPort()));

@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.checkerframework.checker.nullness.qual.EnsuresKeyFor;
 import tukano.api.Follow;
+import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
 import tukano.api.User;
@@ -19,6 +20,7 @@ public class JavaUsers implements Users {
 
 	@Override
 	public Result<String> createUser(User user) {
+
 		Log.info("PostUser = " + user);
 		
 		// Check if user data is valid

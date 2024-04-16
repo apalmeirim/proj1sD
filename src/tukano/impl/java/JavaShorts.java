@@ -16,17 +16,14 @@ public class JavaShorts implements Shorts {
 
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
-
     @Override
     public Result<Short> createShort(String userId, String password) {
         Users users = UsersClientFactory.getClients();
-        Blobs blobs = BlobsClientFactory.getClients();
         var resUser = users.getUser(userId, password);
-        if(!resUser.isOK()) return Result.error(resUser.error());
+        if (!resUser.isOK()) return Result.error(resUser.error());
         String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
         UUID blobsId = UUID.randomUUID();
-        Short s = new Short("shortID_" + UUID.randomUUID(), userId, blob + "/" + blobsId);
-        blobs.upload(blobsId.toString(), (blob + blobsId).getBytes());
+        Short s = new Short("shortID_" + UUID.randomUUID(), userId, blob + "/blobs/" + blobsId);
         Hibernate.getInstance().persist(s);
         return Result.ok(s);
     }
