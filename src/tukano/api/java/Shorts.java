@@ -125,5 +125,5 @@ public interface Shorts {
 	 */
 	Result<List<String>> getFeed(String userId, String password);
 
-	String getShortIDFromBlob(String blobId);
+	Result<String> hasBlobId(String blobId);
 }

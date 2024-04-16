@@ -1,5 +1,6 @@
 package tukano.impl.rest.clients;
 
+import io.grpc.xds.shaded.io.envoyproxy.envoy.config.overload.v3.ScaledTrigger;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;

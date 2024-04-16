@@ -38,4 +38,8 @@ public class DataModelAdaptor {
 				.setBlobUrl(from.getBlobUrl())
 				.build();
 	}
+
+	private static String emptyStingToNull( String s ) {
+		return s == null || s.length() == 0 ? null: s;
+	}
 }

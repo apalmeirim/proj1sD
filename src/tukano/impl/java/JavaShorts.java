@@ -23,6 +23,7 @@ public class JavaShorts implements Shorts {
     @Override
     public Result<Short> createShort(String userId, String password) {
         Users users = UsersClientFactory.getClients();
+        Blobs blobs = BlobsClientFactory.getClients();
         var resUser = users.getUser(userId, password);
         if(!resUser.isOK()) return Result.error(resUser.error());
         String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
