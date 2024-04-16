@@ -27,4 +27,9 @@ public class Likes {
     public String getUserId() {
         return userId;
     }
+
+    @Override
+    public String toString() {
+        return "Likes [shortId=" + shortId + ", userId=" + userId + "]";
+    }
 }

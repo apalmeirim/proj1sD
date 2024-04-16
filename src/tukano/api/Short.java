@@ -3,8 +3,6 @@ package tukano.api;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import java.util.ArrayList;
-
 /**
  * Represents a Short video uploaded by an user.
  * 
