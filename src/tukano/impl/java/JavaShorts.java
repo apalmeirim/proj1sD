@@ -176,8 +176,14 @@ public class JavaShorts implements Shorts {
 
 
     public Result<String> hasBlobId (String blobId) {
-        var res = Hibernate.getInstance().sql("SELECT * FROM Short WHERE blob LIKE '%" + blobId + "%'", Short.class);
-        if(res.isEmpty()) return Result.error(Result.ErrorCode.FORBIDDEN);
-        return Result.ok(res.get(0).getBlobUrl());
+        List<Short> shorts = Hibernate.getInstance().sql("SELECT * FROM Short", Short.class);
+        Iterator<Short> it = shorts.iterator();
+        while(it.hasNext()){
+            Short s = it.next();
+            if(s.getBlobUrl().toLowerCase().contains(blobId.toLowerCase())){
+                return Result.ok(s.getBlobUrl());
+            }
+        }
+        return Result.error(Result.ErrorCode.FORBIDDEN);
     }
 }

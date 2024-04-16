@@ -29,17 +29,22 @@ public class JavaBlobs implements Blobs {
                 return Result.error(Result.ErrorCode.INTERNAL_ERROR);
             }
         }
-        try {
-            file.createNewFile();
-            Files.write(file.toPath(), bytes);
-        } catch (IOException e) {
-            return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+        else {
+            try {
+                file.createNewFile();
+                Files.write(file.toPath(), bytes);
+            } catch (IOException e) {
+                return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+            }
         }
         return Result.ok();
     }
 
     @Override
     public Result<byte[]> download(String blobId) {
+        Shorts shorts = ShortsClientFactory.getClients();
+        var res = shorts.hasBlobId(blobId);
+        if(!res.isOK()) return Result.error(res.error());
         File file = new File(blobId);
         try {
             if(file.isFile()) return Result.ok(Files.readAllBytes(file.toPath()));
