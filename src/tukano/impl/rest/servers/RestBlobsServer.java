@@ -24,7 +24,7 @@ public class RestBlobsServer {
         try {
 
             ResourceConfig config = new ResourceConfig();
-            config.register(  RestUsersResource.class );
+            config.register(  RestBlobsResource.class );
 
             String ip = InetAddress.getLocalHost().getHostAddress();
             String serverURI = String.format(SERVER_URI_FMT, ip, PORT);

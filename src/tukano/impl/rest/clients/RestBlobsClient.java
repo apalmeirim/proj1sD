@@ -38,8 +38,4 @@ public class RestBlobsClient implements Blobs {
         return null;
     }
 
-    @Override
-    public Result<Void> delete(String blobId) {
-        return null;
-    }
 }

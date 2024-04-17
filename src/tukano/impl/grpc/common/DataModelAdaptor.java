@@ -36,8 +36,6 @@ public class DataModelAdaptor {
 				.setShortId( from.getShortId())
 				.setOwnerId( from.getOwnerId())
 				.setBlobUrl(from.getBlobUrl())
-				.setTimestamp(from.getTimestamp())
-				.setTotalLikes(from.getTotalLikes())
 				.build();
 	}
 

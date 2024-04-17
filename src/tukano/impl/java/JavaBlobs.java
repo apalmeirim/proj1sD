@@ -14,9 +14,9 @@ public class JavaBlobs implements Blobs {
 
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
-        Shorts shorts = ShortsClientFactory.getClients();
+        /**Shorts shorts = ShortsClientFactory.getClients();
         var res = shorts.hasBlobId(blobId);
-        if(!res.isOK()) return Result.error(res.error());
+        if(!res.isOK()) return Result.error(res.error());*/
         File file = new File(blobId);
 
         if(file.exists()){
@@ -42,20 +42,16 @@ public class JavaBlobs implements Blobs {
 
     @Override
     public Result<byte[]> download(String blobId) {
-        Shorts shorts = ShortsClientFactory.getClients();
+        /**Shorts shorts = ShortsClientFactory.getClients();
         var res = shorts.hasBlobId(blobId);
-        if(!res.isOK()) return Result.error(res.error());
+        if(!res.isOK()) return Result.error(res.error());*/
         File file = new File(blobId);
         try {
-            if(file.isFile()) return Result.ok(Files.readAllBytes(file.toPath()));
-            return Result.error(Result.ErrorCode.NOT_FOUND);
+            if(!file.isFile()) return Result.error(Result.ErrorCode.NOT_FOUND);
+            return Result.ok(Files.readAllBytes(file.toPath()));
         } catch (IOException e) {
             return Result.error(Result.ErrorCode.INTERNAL_ERROR);
         }
     }
 
-    @Override
-    public Result<Void> delete(String blobId) {
-        return null;
-    }
 }

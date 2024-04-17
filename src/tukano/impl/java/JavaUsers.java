@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
 import tukano.api.User;
+import tukano.api.java.Shorts;
 import tukano.api.java.Users;
 import tukano.impl.ShortsClientFactory;
 import tukano.persistence.Hibernate;
@@ -94,6 +95,12 @@ public class JavaUsers implements Users {
 		if(!res.isOK()) return Result.error(res.error());
 		User user = res.value();
 		// Check if user exists
+		/**Shorts shorts = ShortsClientFactory.getClients();
+		List<String> resShorts = shorts.getShorts(userId).value();
+		Iterator<String> it = resShorts.iterator();
+		while(it.hasNext()) {
+			shorts.deleteShort(it.next(), pwd);
+		}*/
 		Hibernate.getInstance().delete(user);
 		Log.info("DeleteUser : user = " + userId + "; pwd = " + pwd);
 		return Result.ok(user);
