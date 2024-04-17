@@ -1,12 +1,12 @@
- package tukano.impl.java;
+package tukano.impl.java;
 
 import tukano.api.Follow;
 import tukano.api.Likes;
 import tukano.api.Short;
-import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.java.Users;
+import tukano.impl.UsersClientFactory;
 import tukano.persistence.Hibernate;
 
 import java.util.*;
@@ -44,7 +44,11 @@ public class JavaShorts implements Shorts {
     @Override
     public Result<Short> getShort(String shortId) {
         var res = Hibernate.getInstance().sql("SELECT * FROM Short WHERE shortId LIKE '"+ shortId +"'", Short.class);
-        if (res.isEmpty())
+        if(res.isEmpty()) return Result.error(Result.ErrorCode.NOT_FOUND);
+        String userId = res.get(0).getOwnerId();
+        Users users = UsersClientFactory.getClients();
+        var resUser = users.searchUsers(userId);
+        if (resUser.equals(Result.error(Result.ErrorCode.BAD_REQUEST)))
             return Result.error(Result.ErrorCode.NOT_FOUND);
         return Result.ok(res.get(0));
     }

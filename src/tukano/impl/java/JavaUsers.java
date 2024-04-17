@@ -3,13 +3,11 @@ package tukano.impl.java;
 import java.util.*;
 import java.util.logging.Logger;
 
-import org.checkerframework.checker.nullness.qual.EnsuresKeyFor;
-import tukano.api.Follow;
-import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
 import tukano.api.User;
 import tukano.api.java.Users;
+import tukano.impl.ShortsClientFactory;
 import tukano.persistence.Hibernate;
 
 public class JavaUsers implements Users {

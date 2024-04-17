@@ -9,7 +9,7 @@ import tukano.api.java.Shorts;
 public class GrpcShortsServer {
     public static final int PORT = 14567;
 
-    private static final String GRPC_CTX = "/gprc";
+    private static final String GRPC_CTX = "/grpc";
     private static final String SERVER_BASE_URI = "grpc://%s:%s%s";
 
     private static Logger Log = Logger.getLogger(GrpcShortsServer.class.getName());

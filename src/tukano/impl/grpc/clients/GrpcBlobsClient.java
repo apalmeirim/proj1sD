@@ -46,10 +46,6 @@ public class GrpcBlobsClient implements Blobs {
         });
     }
 
-    @Override
-    public Result<Void> delete(String blobId) {
-        return null;
-    }
 
     static <T> Result<T> toJavaResult(Supplier<T> func) {
         try {

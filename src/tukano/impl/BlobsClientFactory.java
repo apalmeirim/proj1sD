@@ -1,7 +1,8 @@
-package tukano.impl.java;
+package tukano.impl;
 
 import tukano.api.java.Blobs;
 import tukano.impl.grpc.clients.GrpcBlobsClient;
+import tukano.impl.java.Discovery;
 import tukano.impl.rest.clients.RestBlobsClient;
 
 public class BlobsClientFactory {
