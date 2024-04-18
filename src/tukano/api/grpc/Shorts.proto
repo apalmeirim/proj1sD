@@ -23,6 +23,7 @@ service Shorts {
 	rpc likes( LikesArgs ) returns (LikesResult);
 
 	rpc getFeed( GetFeedArgs) returns (GetFeedResult);
+
 }
 
 message GrpcShort {
@@ -112,3 +113,4 @@ message GetFeedArgs {
 message GetFeedResult {
 	repeated string shortId = 1;
 }
+

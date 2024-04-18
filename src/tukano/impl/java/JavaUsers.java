@@ -3,6 +3,8 @@ package tukano.impl.java;
 import java.util.*;
 import java.util.logging.Logger;
 
+import tukano.api.Likes;
+import tukano.api.Short;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
 import tukano.api.User;
@@ -57,7 +59,7 @@ public class JavaUsers implements Users {
 
 		User user = res.get(0);
 		//Check if the password is correct
-		if( !user.getPwd().equals( pwd)) {
+		if( !user.getPwd().equals(pwd)) {
 			Log.info("Password is incorrect.");
 			return Result.error( ErrorCode.FORBIDDEN);
 		}
@@ -100,7 +102,8 @@ public class JavaUsers implements Users {
 		if(resShorts.isOK()){
 			Iterator<String> it = resShorts.value().iterator();
 			while(it.hasNext()) {
-				shorts.deleteShort(it.next(), pwd);
+				String s = it.next();
+				shorts.deleteShort(s, pwd);
 			}
 		}
 		Hibernate.getInstance().delete(user);

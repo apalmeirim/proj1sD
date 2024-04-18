@@ -43,9 +43,9 @@ public class JavaBlobs implements Blobs {
 
     @Override
     public Result<byte[]> download(String blobId) {
-        /**Shorts shorts = ShortsClientFactory.getClients();
-        var res = shorts.hasBlobId(blobId);
-        if(!res.isOK()) return Result.error(res.error());*/
+        Shorts shorts = ShortsClientFactory.getClients();
+        var res = shorts.getShort(blobId);
+        if(!res.isOK()) return Result.error(res.error());
         File file = new File(blobId);
         try {
             if(!file.isFile()) return Result.error(Result.ErrorCode.NOT_FOUND);

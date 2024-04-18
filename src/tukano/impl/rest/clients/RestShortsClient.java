@@ -4,6 +4,7 @@ import io.grpc.xds.shaded.io.envoyproxy.envoy.config.overload.v3.ScaledTrigger;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
@@ -14,7 +15,6 @@ import tukano.api.User;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.rest.RestShorts;
-import tukano.api.rest.RestUsers;
 import utils.Sleep;
 
 import java.net.URI;
@@ -22,7 +22,7 @@ import java.util.List;
 
 import static tukano.impl.rest.clients.RestClient.getErrorCodeFrom;
 
-public class RestShortsClient implements Shorts {
+public class RestShortsClient extends RestClient implements Shorts {
 
     protected static final int MAX_RETRIES = 10;
     protected static final int RETRY_SLEEP = 1000;
@@ -48,28 +48,22 @@ public class RestShortsClient implements Shorts {
 
     @Override
     public Result<Void> deleteShort(String shortId, String password) {
-        WebTarget target = client.target(serverURI).path(RestShorts.PATH);
-        for (int i = 0; i < MAX_RETRIES; i++)
-            try {
-                Response r = target.path( shortId )
-                        .queryParam(RestShorts.PWD, password).request()
-                        .delete();
-
-                if (r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
-                    // SUCCESS
-                    return Result.ok();
-                else {
-                    return Result.error(getErrorCodeFrom(r.getStatus()));
-                }
-            } catch (ProcessingException x) {
-                Sleep.ms(RETRY_SLEEP);
-            }
-        return null; // Report failure
+        return super.reTry(() -> super.toJavaResultVoid(
+                client.target(serverURI).path(RestShorts.PATH)
+                        .path(shortId)
+                        .queryParam(password)
+                        .request()
+                        .delete()));
     }
 
     @Override
     public Result<Short> getShort(String shortId) {
-        return null;
+        return super.reTry(() -> super.toJavaResult(
+                client.target(serverURI).path(RestShorts.PATH)
+                        .path(shortId)
+                        .request()
+                        .accept(MediaType.APPLICATION_JSON)
+                        .get(),Short.class));
     }
 
     @Override
@@ -106,17 +100,31 @@ public class RestShortsClient implements Shorts {
 
     @Override
     public Result<Void> like(String shortId, String userId, boolean isLiked, String password) {
-        return null;
+        return super.reTry(() -> super.toJavaResultVoid(
+                client.target(serverURI).path(RestShorts.PATH)
+                        .path(shortId + "/" + userId + RestShorts.LIKES)
+                        .queryParam(RestShorts.PWD, password)
+                        .request()
+                        .accept(MediaType.APPLICATION_JSON)
+                        .post(Entity.entity(isLiked, MediaType.APPLICATION_JSON))));
     }
 
     @Override
     public Result<List<String>> likes(String shortId, String password) {
-        return null;
+        return super.reTry(() -> super.toJavaResultList(
+                client.target(serverURI).path(RestShorts.PATH)
+                        .path(shortId + RestShorts.LIKES)
+                        .queryParam(RestShorts.PWD, password)
+                        .request()
+                        .accept(MediaType.APPLICATION_JSON)
+                        .get()));
     }
 
     @Override
     public Result<List<String>> getFeed(String userId, String password) {
         return null;
     }
+
+
 
 }

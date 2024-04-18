@@ -1,8 +1,10 @@
 package tukano.impl.java;
 
+import io.netty.util.internal.ResourcesUtil;
 import tukano.api.Follow;
 import tukano.api.Likes;
 import tukano.api.Short;
+import tukano.api.User;
 import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
@@ -20,14 +22,19 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<Short> createShort(String userId, String password) {
-        Users users = UsersClientFactory.getClients();
-        var resUser = users.getUser(userId, password);
-        if (!resUser.isOK()) return Result.error(resUser.error());
-        String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
-        UUID blobsId = UUID.randomUUID();
-        Short s = new Short("shortID_" + UUID.randomUUID(), userId, blob + "/blobs/" + blobsId);
-        Hibernate.getInstance().persist(s);
-        return Result.ok(s);
+        try {
+            Users users = UsersClientFactory.getClients();
+            var resUser = users.getUser(userId, password);
+            if (!resUser.isOK()) return Result.error(resUser.error());
+            String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
+            UUID id = UUID.randomUUID();
+            Short s = new Short(id.toString(), userId, blob + "/blobs/" + id);
+            Hibernate.getInstance().persist(s);
+            return Result.ok(s);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -53,9 +60,9 @@ public class JavaShorts implements Shorts {
     @Override
     public Result<List<String>> getShorts(String userId) {
         Users users = UsersClientFactory.getClients();
-        var res = users.searchUsers(userId);
-        if(res.equals(Result.error(Result.ErrorCode.BAD_REQUEST))) {
-            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        List<User> res = users.searchUsers(userId).value();
+        if(res.isEmpty()) {
+            return Result.error(Result.ErrorCode.NOT_FOUND);
         }
         List<String> shortsIDs = Hibernate.getInstance().sql("SELECT shortId FROM Short WHERE ownerId LIKE '"+ userId + "'", String.class);
         return Result.ok(shortsIDs);
@@ -120,6 +127,7 @@ public class JavaShorts implements Shorts {
         return Result.ok();
     }
 
+
     @Override
     public Result<List<String>> likes(String shortId, String password) {
         var res = getShort(shortId);
@@ -174,5 +182,6 @@ public class JavaShorts implements Shorts {
             return false;
         return true;
     }
+
 
 }

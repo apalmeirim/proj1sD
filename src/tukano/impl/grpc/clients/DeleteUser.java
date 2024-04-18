@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.logging.Logger;
 
 public class DeleteUser {
-    private static Logger Log = Logger.getLogger(CreateUser.class.getName());
+    private static Logger Log = Logger.getLogger(DeleteUser.class.getName());
 
     public static void main(String[] args) throws IOException {
 

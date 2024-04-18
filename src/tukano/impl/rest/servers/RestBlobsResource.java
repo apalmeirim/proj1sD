@@ -30,9 +30,6 @@ public class RestBlobsResource implements RestBlobs {
         return resultOrThrow( impl.download(blobId));
     }
 
-    public void delete(String blobId) {
-        resultOrThrow( impl.delete(blobId));
-    }
     /**
      * Given a Result<T>, either returns the value, or throws the JAX-WS Exception
      * matching the error code...

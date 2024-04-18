@@ -32,7 +32,6 @@ public interface Blobs {
 	 */
 	Result<byte[]> download(String blobId);
 
-	Result<Void> delete(String blobId);
 	/**
 	 * Downloads a short video blob resource as a result suitable for streaming
 	 * large-sized byte resources 

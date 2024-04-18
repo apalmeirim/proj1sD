@@ -64,7 +64,7 @@ public interface RestShorts {
 	@POST
 	@Path("/{" + SHORT_ID + "}/{" + USER_ID + "}" + LIKES )
 	@Consumes(MediaType.APPLICATION_JSON)
-	void like(@PathParam(SHORT_ID) String shortId, @PathParam(USER_ID) String userId, boolean isLiked,  @QueryParam(PWD) String password);
+	void like(@PathParam(SHORT_ID) String shortId, @PathParam(USER_ID) String userId, boolean isLiked, @QueryParam(PWD) String password);
 
 	@GET
 	@Path("/{" + SHORT_ID + "}" + LIKES )
@@ -75,5 +75,6 @@ public interface RestShorts {
 	@Path("/{" + USER_ID + "}" + FEED )
 	@Produces(MediaType.APPLICATION_JSON)
 	List<String> getFeed( @PathParam(USER_ID) String userId, @QueryParam(PWD) String password);
+
 
 }

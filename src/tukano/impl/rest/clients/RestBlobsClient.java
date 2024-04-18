@@ -43,26 +43,5 @@ public class RestBlobsClient implements Blobs {
     @Override
     public Result<byte[]> download(String blobId) { return null; }
 
-    @Override
-    public Result<Void> delete(String blobId) {
-        WebTarget target = client.target(serverURI).path(RestShorts.PATH);
-        for (int i = 0; i < MAX_RETRIES; i++)
-            try {
-                Response r = target.path(blobId)
-                        .request()
-                        .accept(MediaType.APPLICATION_JSON)
-                        .delete();
-
-                if (r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
-                    // SUCCESS
-                    return Result.ok();
-                else {
-                    return Result.error(getErrorCodeFrom(r.getStatus()));
-                }
-            } catch (ProcessingException x) {
-                Sleep.ms(RETRY_SLEEP);
-            }
-        return null; // Report failure
-    }
 
 }

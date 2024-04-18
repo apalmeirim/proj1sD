@@ -1,5 +1,6 @@
 package tukano.impl.grpc.clients;
 
+import org.hibernate.sql.Delete;
 import tukano.api.User;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.logging.Logger;
 
 public class UpdateUser {
 
-    private static Logger Log = Logger.getLogger(CreateUser.class.getName());
+    private static Logger Log = Logger.getLogger(UpdateUser.class.getName());
 
     public static void main(String[] args) throws IOException {
 
