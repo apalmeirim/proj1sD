@@ -43,7 +43,9 @@ public class JavaShorts implements Shorts {
         if (!res.isOK())
             return Result.error(res.error());
         Short s = res.value();
-        if(!checkPwd(s.getOwnerId(), password))
+        Users users = UsersClientFactory.getClients();
+        var resUser = users.getUser(s.getOwnerId(), password);
+        if(resUser.equals(Result.error(Result.ErrorCode.FORBIDDEN)))
             return Result.error(Result.ErrorCode.FORBIDDEN);
         Log.info("deleteShort : shortId = " + shortId);
         Hibernate.getInstance().delete(s);

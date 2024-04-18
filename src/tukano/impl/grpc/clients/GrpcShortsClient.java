@@ -41,7 +41,11 @@ public class GrpcShortsClient implements Shorts {
 
     @Override
     public Result<Short> getShort(String shortId) {
-        return null;
+        return toJavaResult(() -> {
+            var res = stub.getShort(ShortsProtoBuf.GetShortArgs.newBuilder()
+                    .setShortId(shortId).build());
+            return GrpcShort_to_Short(res.getValue());
+        });
     }
 
     @Override

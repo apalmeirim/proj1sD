@@ -10,9 +10,12 @@ public class ShortsClientFactory {
 
 
     public static Shorts getClients() {
-        var serverURI = Discovery.getInstance().knownUrisOf("shorts", 1)[0];
-        if (serverURI.toString().contains("rest")) return new RestShortsClient(serverURI);
-        else return new GrpcShortsClient(serverURI);
+        try {
+            var serverURI = Discovery.getInstance().knownUrisOf("shorts", 1)[0];
+            if (serverURI.toString().contains("rest")) return new RestShortsClient(serverURI);
+            else return new GrpcShortsClient(serverURI);
+        }catch (InterruptedException e){}
+        return null;
     }
 
 

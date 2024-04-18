@@ -23,7 +23,7 @@ import utils.Sleep;
 
 public class RestUsersClient extends RestClient implements Users {
 
-	protected static final int MAX_RETRIES = 10;
+	protected static final int MAX_RETRIES = 3;
 	protected static final int RETRY_SLEEP = 1000;
 	final URI serverURI;
 	final Client client;
@@ -98,25 +98,11 @@ public class RestUsersClient extends RestClient implements Users {
 
 	@Override
 	public Result<List<User>> searchUsers(String userId) {
-		WebTarget target = client.target(serverURI).path(RestUsers.PATH);
-		for (int i = 0; i < MAX_RETRIES; i++)
-			try {
-				Response r = target
-						.queryParam(RestUsers.QUERY, userId)
-						.request()
-						.accept(MediaType.APPLICATION_JSON)
-						.get();
-
-				if (r.getStatus() == Status.OK.getStatusCode() && r.hasEntity())
-					// SUCCESS
-					return Result.ok(r.readEntity(new GenericType<List<User>>() {}));
-				else {
-					return Result.error(getErrorCodeFrom(r.getStatus()));
-				}
-			} catch (ProcessingException x) {
-				Sleep.ms(RETRY_SLEEP);
-			}
-		return null; // Report failure
+		return super.reTry(() -> super.toJavaResultList(client.target(serverURI).path(RestUsers.PATH)
+				.queryParam(RestUsers.QUERY, userId)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get()));
 	}
 
 
