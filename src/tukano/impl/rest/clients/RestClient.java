@@ -1,10 +1,14 @@
 package tukano.impl.rest.clients;
 
 import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import tukano.api.java.Result;
 import utils.Sleep;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static tukano.api.java.Result.ErrorCode.INTERNAL_ERROR;
@@ -41,6 +45,31 @@ public class RestClient {
             r.close();
         }
     }
+    protected <T> Result<T> toJavaResultVoid(Response r) {
+        try {
+            var status = r.getStatusInfo().toEnum();
+            if (status == Response.Status.OK && r.hasEntity())
+                return ok();
+            else if (status == Response.Status.NO_CONTENT) return ok();
+
+            return error(getErrorCodeFrom(status.getStatusCode()));
+        } finally {
+            r.close();
+        }
+    }
+    protected <T> Result<List<T>> toJavaResultList(Response r) {
+        try {
+            var status = r.getStatusInfo().toEnum();
+            if (status == Response.Status.OK && r.hasEntity())
+                return ok(r.readEntity(new GenericType<List<T>>(){}));
+            else if (status == Response.Status.NO_CONTENT) return ok();
+
+            return error(getErrorCodeFrom(status.getStatusCode()));
+        } finally {
+            r.close();
+        }
+    }
+
     public static Result.ErrorCode getErrorCodeFrom(int status) {
         return switch (status) {
             case 200, 209 -> Result.ErrorCode.OK;

@@ -1,5 +1,6 @@
 package tukano.impl.rest.servers;
 
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import tukano.api.Short;
@@ -13,6 +14,7 @@ import tukano.impl.java.JavaShorts;
 
 import java.util.List;
 
+@Singleton
 public class RestBlobsResource implements RestBlobs {
 
     final Blobs impl;

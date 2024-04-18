@@ -12,6 +12,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import tukano.api.Short;
+import tukano.api.java.Result;
 
 @Path(RestShorts.PATH)
 public interface RestShorts {
@@ -30,8 +31,6 @@ public interface RestShorts {
 	String SHORTS = "/shorts";
 	String FOLLOWERS = "/followers";
 
-	String HASBLOBID = "/hasBlobId";
-	
 	@POST
 	@Path("/{" + USER_ID + "}")
 	@Produces(MediaType.APPLICATION_JSON)

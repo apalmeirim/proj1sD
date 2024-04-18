@@ -14,8 +14,6 @@ import tukano.impl.ShortsClientFactory;
 import tukano.persistence.Hibernate;
 
 public class JavaUsers implements Users {
-	//private final Map<String,User> users = new HashMap<>();
-
 
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
@@ -98,6 +96,21 @@ public class JavaUsers implements Users {
 		User user = res.value();
 		// Check if user exists
 		Shorts shorts = ShortsClientFactory.getClients();
+
+		List<User> allUsers = Hibernate.getInstance().sql("SELECT * FROM User", User.class);
+		Iterator<User> itAllUsers = allUsers.iterator();
+
+		while(itAllUsers.hasNext()) {
+			User u = itAllUsers.next();
+			List<String> allShorts = shorts.getShorts(u.getUserId()).value();
+			Iterator<String> itAllShorts = allShorts.iterator();
+			while(itAllShorts.hasNext()) {
+				String sh = itAllShorts.next();
+				List<String> allLikes = shorts.likes(sh, u.getPwd()).value();
+				if (allLikes.contains(userId)) shorts.like(sh, userId, false, pwd);
+			}
+		}
+
 		Result<List<String>> resShorts = shorts.getShorts(userId);
 		if(resShorts.isOK()){
 			Iterator<String> it = resShorts.value().iterator();
