@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import io.grpc.ServerBuilder;
 import tukano.api.java.Users;
+import tukano.impl.java.Discovery;
 
 public class GrpcUsersServer {
 public static final int PORT = 9000;
@@ -20,6 +21,7 @@ public static final int PORT = 9000;
 		var server = ServerBuilder.forPort(PORT).addService(stub).build();
 		var serverURI = String.format(SERVER_BASE_URI, InetAddress.getLocalHost().getHostAddress(), PORT, GRPC_CTX);
 
+		Discovery.getInstance().announce("users", serverURI);
 		Log.info(String.format("%s gRPC Server ready @ %s\n", Users.NAME, serverURI));
 		server.start().awaitTermination();
 	}

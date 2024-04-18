@@ -1,14 +1,20 @@
 package tukano.impl.rest.servers;
 
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
+import tukano.api.Short;
 import tukano.api.java.Blobs;
 import tukano.api.java.Result;
-import tukano.impl.java.JavaBlobs;
+import tukano.api.java.Shorts;
 import tukano.api.rest.RestBlobs;
+import tukano.api.rest.RestShorts;
+import tukano.impl.java.JavaBlobs;
+import tukano.impl.java.JavaShorts;
+
+import java.util.List;
 
 public class RestBlobsResource implements RestBlobs {
+
     final Blobs impl;
     public RestBlobsResource() {
         this.impl = new JavaBlobs();
@@ -21,9 +27,16 @@ public class RestBlobsResource implements RestBlobs {
 
     @Override
     public byte[] download(String blobId) {
-        return resultOrThrow(impl.download(blobId));
+        return resultOrThrow( impl.download(blobId));
     }
 
+    public void delete(String blobId) {
+        resultOrThrow( impl.delete(blobId));
+    }
+    /**
+     * Given a Result<T>, either returns the value, or throws the JAX-WS Exception
+     * matching the error code...
+     */
     protected <T> T resultOrThrow(Result<T> result) {
         if (result.isOK())
             return result.value();
@@ -46,4 +59,5 @@ public class RestBlobsResource implements RestBlobs {
             default -> Response.Status.INTERNAL_SERVER_ERROR;
         };
     }
+
 }

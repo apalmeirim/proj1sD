@@ -1,14 +1,21 @@
 package tukano.impl.rest.clients;
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.rest.RestBlobs;
+import tukano.api.rest.RestShorts;
+import utils.Sleep;
 
 import java.net.URI;
+
+import static tukano.impl.rest.clients.RestClient.getErrorCodeFrom;
 
 public class RestBlobsClient implements Blobs {
 
@@ -34,8 +41,28 @@ public class RestBlobsClient implements Blobs {
     }
 
     @Override
-    public Result<byte[]> download(String blobId) {
-        return null;
+    public Result<byte[]> download(String blobId) { return null; }
+
+    @Override
+    public Result<Void> delete(String blobId) {
+        WebTarget target = client.target(serverURI).path(RestShorts.PATH);
+        for (int i = 0; i < MAX_RETRIES; i++)
+            try {
+                Response r = target.path(blobId)
+                        .request()
+                        .accept(MediaType.APPLICATION_JSON)
+                        .delete();
+
+                if (r.getStatus() == Response.Status.OK.getStatusCode() && r.hasEntity())
+                    // SUCCESS
+                    return Result.ok();
+                else {
+                    return Result.error(getErrorCodeFrom(r.getStatus()));
+                }
+            } catch (ProcessingException x) {
+                Sleep.ms(RETRY_SLEEP);
+            }
+        return null; // Report failure
     }
 
 }

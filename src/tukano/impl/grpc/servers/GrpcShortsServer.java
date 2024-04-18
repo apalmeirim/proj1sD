@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import io.grpc.ServerBuilder;
 import tukano.api.java.Shorts;
+import tukano.impl.java.Discovery;
 
 public class GrpcShortsServer {
     public static final int PORT = 14567;
@@ -20,6 +21,7 @@ public class GrpcShortsServer {
         var server = ServerBuilder.forPort(PORT).addService(stub).build();
         var serverURI = String.format(SERVER_BASE_URI, InetAddress.getLocalHost().getHostAddress(), PORT, GRPC_CTX);
 
+        Discovery.getInstance().announce("shorts", serverURI);
         Log.info(String.format("%s gRPC Server ready @ %s\n", Shorts.NAME, serverURI));
         server.start().awaitTermination();
     }

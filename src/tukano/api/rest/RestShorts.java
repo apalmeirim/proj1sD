@@ -21,6 +21,7 @@ public interface RestShorts {
 	String USER_ID1 = "userId1";
 	String USER_ID2 = "userId2";
 	String SHORT_ID = "shortId";
+	String BLOB_ID = "blobId";
 	
 	String PWD = "pwd";
 	String FEED = "/feed";
@@ -28,6 +29,8 @@ public interface RestShorts {
 	String LIKES = "/likes";
 	String SHORTS = "/shorts";
 	String FOLLOWERS = "/followers";
+
+	String HASBLOBID = "/hasBlobId";
 	
 	@POST
 	@Path("/{" + USER_ID + "}")
@@ -72,4 +75,5 @@ public interface RestShorts {
 	@Path("/{" + USER_ID + "}" + FEED )
 	@Produces(MediaType.APPLICATION_JSON)
 	List<String> getFeed( @PathParam(USER_ID) String userId, @QueryParam(PWD) String password);
+
 }

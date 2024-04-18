@@ -64,7 +64,7 @@ public class GrpcShortsClient implements Shorts {
     }
 
     @Override
-    public Result<String> hasBlobId( String blobId) {
+    public Result<Void> hasBlobId( String blobId) {
         return null;
     }
 }

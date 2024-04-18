@@ -3,6 +3,7 @@ package tukano.api.rest;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import tukano.api.User;
 
 @Path(RestBlobs.PATH)
 public interface RestBlobs {
@@ -20,4 +21,9 @@ public interface RestBlobs {
  	@Path("{" + BLOB_ID +"}") 	
  	@Produces(MediaType.APPLICATION_OCTET_STREAM)
  	byte[] download(@PathParam(BLOB_ID) String blobId);
+
+	@DELETE
+	@Path("/{" + BLOB_ID + "}")
+	@Produces(MediaType.APPLICATION_JSON)
+	void delete(@PathParam(BLOB_ID) String blobId);
 }

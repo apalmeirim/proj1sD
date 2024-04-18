@@ -3,6 +3,7 @@ package tukano.impl.java;
 import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
+import tukano.impl.ShortsClientFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class JavaBlobs implements Blobs {
                 byte[] existingBytes = Files.readAllBytes(file.toPath());
                 if(Arrays.equals(bytes, existingBytes))
                     return Result.error(Result.ErrorCode.CONFLICT);
-                Files.write(file.toPath(), bytes);
+                else Files.write(file.toPath(), bytes);
             }catch (IOException e) {
                 return Result.error(Result.ErrorCode.INTERNAL_ERROR);
             }
@@ -53,5 +54,17 @@ public class JavaBlobs implements Blobs {
             return Result.error(Result.ErrorCode.INTERNAL_ERROR);
         }
     }
+
+
+    @Override
+    public Result<Void> delete(String blobId){
+        File file = new File(blobId);
+        if(file.exists()) {
+            file.delete();
+            return Result.ok();
+        }
+        return Result.error(Result.ErrorCode.NOT_FOUND);
+    }
+
 
 }

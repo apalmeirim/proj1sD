@@ -6,6 +6,7 @@ import static tukano.impl.grpc.common.DataModelAdaptor.GrpcUser_to_User;
 import static tukano.impl.grpc.common.DataModelAdaptor.User_to_GrpcUser;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -19,6 +20,7 @@ import tukano.api.java.Result.ErrorCode;
 import tukano.api.User;
 import tukano.api.java.Users;
 import tukano.impl.grpc.generated_java.UsersGrpc;
+import tukano.impl.grpc.generated_java.UsersProtoBuf;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.CreateUserArgs;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.GetUserArgs;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.DeleteUserArgs;
@@ -74,7 +76,16 @@ public class GrpcUsersClient implements Users {
 
 	@Override
 	public Result<List<User>> searchUsers(String pattern) {
-		throw new RuntimeException("Not Implemented...");
+		return toJavaResult(() -> {
+			var res = stub.searchUsers(UsersProtoBuf.SearchUserArgs.newBuilder()
+					.setPattern(pattern).build());
+			List<User> users = new ArrayList<>();
+			while(res.hasNext()){
+				UsersProtoBuf.GrpcUser user = res.next();
+				users.add(GrpcUser_to_User(user));
+			}
+			return users;
+		});
 	}
 	
 	static <T> Result<T> toJavaResult(Supplier<T> func) {
