@@ -3,8 +3,6 @@ package tukano.impl.java;
 import java.util.*;
 import java.util.logging.Logger;
 
-import tukano.api.Likes;
-import tukano.api.Short;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
 import tukano.api.User;
@@ -101,7 +99,6 @@ public class JavaUsers implements Users {
 
 		List<User> allUsers = Hibernate.getInstance().sql("SELECT * FROM User", User.class);
 		Iterator<User> itAllUsers = allUsers.iterator();
-
 		while(itAllUsers.hasNext()) {
 			User u = itAllUsers.next();
 			List<String> allShorts = shorts.getShorts(u.getUserId()).value();

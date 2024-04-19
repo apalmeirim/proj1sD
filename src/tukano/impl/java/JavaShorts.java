@@ -1,11 +1,9 @@
 package tukano.impl.java;
 
-import io.netty.util.internal.ResourcesUtil;
 import tukano.api.Follow;
 import tukano.api.Likes;
 import tukano.api.Short;
 import tukano.api.User;
-import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.java.Users;

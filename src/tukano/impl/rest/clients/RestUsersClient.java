@@ -3,23 +3,14 @@ package tukano.impl.rest.clients;
 import java.net.URI;
 import java.util.List;
 
-import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.core.GenericType;
-import org.glassfish.jersey.client.ClientConfig;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import tukano.api.User;
 import tukano.api.java.Result;
-import tukano.api.java.Result.ErrorCode;
 import tukano.api.java.Users;
 import tukano.api.rest.RestUsers;
-import utils.Sleep;
 
 public class RestUsersClient extends RestClient implements Users {
 
@@ -33,7 +24,7 @@ public class RestUsersClient extends RestClient implements Users {
 	@Override
 	public Result<String> createUser(User user) {
 		return super.reTry(() -> super.toJavaResult(
-				client.target( serverURI ).path( RestUsers.PATH )
+				target
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.post(Entity.entity(user, MediaType.APPLICATION_JSON)), String.class));
@@ -51,29 +42,18 @@ public class RestUsersClient extends RestClient implements Users {
 
 	}
 	public Result<Void> checkPassword(String name, String pwd) {
-		WebTarget target = client.target(serverURI).path(RestUsers.PATH);
-		for (int i = 0; i < MAX_RETRIES; i++)
-			try {
-				Response r = target.path( name ).path("/check")
+		return super.reTry(() -> super.toJavaResultVoid(
+				target
+				.path( name ).path("/check")
 						.queryParam(RestUsers.PWD, pwd).request()
-						.get();
-
-				if (r.getStatus() == Status.OK.getStatusCode() && r.hasEntity())
-					// SUCCESS
-					return Result.ok();
-				else {
-					return Result.error(getErrorCodeFrom(r.getStatus()));
-				}
-			} catch (ProcessingException x) {
-				Sleep.ms(RETRY_SLEEP);
-			}
-		return null; // Report failure
+						.get()));
 	}
 
 	@Override
 	public Result<User> updateUser(String userId, String password, User user) {
-		return super.reTry(() -> super.reTry(() -> super.toJavaResult(client.target(serverURI).path(RestUsers.PATH)
-		.path( userId )
+		return super.reTry(() -> super.reTry(() -> super.toJavaResult(
+				target
+				.path( userId )
 				.queryParam(RestUsers.PWD, password).request()
 				.put(Entity.entity(user, MediaType.APPLICATION_JSON)), User.class)));
 
@@ -81,8 +61,9 @@ public class RestUsersClient extends RestClient implements Users {
 
 	@Override
 	public Result<User> deleteUser(String userId, String password) {
-		return super.reTry(() -> super.toJavaResult(client.target(serverURI).path(RestUsers.PATH)
-		.path( userId )
+		return super.reTry(() -> super.toJavaResult(
+						target
+						.path( userId )
 						.queryParam(RestUsers.PWD, password).request()
 						.accept(MediaType.APPLICATION_JSON)
 						.delete(), User.class));
@@ -90,7 +71,8 @@ public class RestUsersClient extends RestClient implements Users {
 
 	@Override
 	public Result<List<User>> searchUsers(String userId) {
-		return super.reTry(() -> super.toJavaResultList(client.target(serverURI).path(RestUsers.PATH)
+		return super.reTry(() -> super.toJavaResultList(
+				target
 				.queryParam(RestUsers.QUERY, userId)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)

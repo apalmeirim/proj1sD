@@ -1,13 +1,16 @@
 package tukano.impl.rest.clients;
 
 import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import tukano.api.java.Result;
 import utils.Sleep;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.net.URI;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -19,6 +22,7 @@ import static tukano.api.java.Result.ok;
 public class RestClient {
 
     protected static final int MAX_RETRIES = 3;
+
     protected static final int RETRY_SLEEP = 1000;
 
     protected static final int READ_TIMEOUT = 10000;
@@ -79,7 +83,7 @@ public class RestClient {
         try {
             var status = r.getStatusInfo().toEnum();
             if (status == Response.Status.OK && r.hasEntity())
-                return ok(r.readEntity(new GenericType<List<T>>(){}));
+                return ok(r.readEntity(new GenericType<>(){}));
             else if (status == Response.Status.NO_CONTENT) return ok();
 
             return error(getErrorCodeFrom(status.getStatusCode()));

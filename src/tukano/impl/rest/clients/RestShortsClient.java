@@ -1,11 +1,7 @@
 package tukano.impl.rest.clients;
 
-import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import tukano.api.Short;
 import tukano.api.java.Result;
@@ -22,10 +18,7 @@ public class RestShortsClient extends RestClient implements Shorts {
     final WebTarget target;
 
     public RestShortsClient( URI serverURI ) {
-        this.serverURI = serverURI;
-        this.config = new ClientConfig();
-        this.client = ClientBuilder.newClient(config);
-
+        super(serverURI);
         target = client.target( serverURI ).path( RestShorts.PATH );
     }
 
@@ -38,17 +31,18 @@ public class RestShortsClient extends RestClient implements Shorts {
     @Override
     public Result<Void> deleteShort(String shortId, String password) {
         return super.reTry(() -> super.toJavaResultVoid(
-                client.target(serverURI).path(RestShorts.PATH)
+                        target
                         .path(shortId)
-                        .queryParam(password)
+                        .queryParam(RestShorts.PWD, password)
                         .request()
+                        .accept(MediaType.APPLICATION_JSON)
                         .delete()));
     }
 
     @Override
     public Result<Short> getShort(String shortId) {
         return super.reTry(() -> super.toJavaResult(
-                client.target(serverURI).path(RestShorts.PATH)
+                        target
                         .path(shortId)
                         .request()
                         .accept(MediaType.APPLICATION_JSON)
@@ -58,7 +52,7 @@ public class RestShortsClient extends RestClient implements Shorts {
     @Override
     public Result<List<String>> getShorts(String userId) {
         return super.reTry(() -> super.toJavaResultList(
-                client.target(serverURI).path(RestShorts.PATH)
+                        target
                         .path( userId + RestShorts.SHORTS )
                         .request()
                         .accept(MediaType.APPLICATION_JSON)
@@ -78,7 +72,7 @@ public class RestShortsClient extends RestClient implements Shorts {
     @Override
     public Result<Void> like(String shortId, String userId, boolean isLiked, String password) {
         return super.reTry(() -> super.toJavaResultVoid(
-                client.target(serverURI).path(RestShorts.PATH)
+                        target
                         .path(shortId + "/" + userId + RestShorts.LIKES)
                         .queryParam(RestShorts.PWD, password)
                         .request()
@@ -89,7 +83,7 @@ public class RestShortsClient extends RestClient implements Shorts {
     @Override
     public Result<List<String>> likes(String shortId, String password) {
         return super.reTry(() -> super.toJavaResultList(
-                client.target(serverURI).path(RestShorts.PATH)
+                        target
                         .path(shortId + RestShorts.LIKES)
                         .queryParam(RestShorts.PWD, password)
                         .request()
