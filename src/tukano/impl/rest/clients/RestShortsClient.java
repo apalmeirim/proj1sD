@@ -7,26 +7,17 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.client.ClientConfig;
-import tukano.api.Likes;
 import tukano.api.Short;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.rest.RestShorts;
-import utils.Sleep;
+import tukano.api.rest.RestUsers;
 
 import java.net.URI;
 import java.util.List;
 
 
 public class RestShortsClient extends RestClient implements Shorts {
-
-    protected static final int MAX_RETRIES = 10;
-    protected static final int RETRY_SLEEP = 1000;
-    final URI serverURI;
-    final Client client;
-    final ClientConfig config;
 
     final WebTarget target;
 

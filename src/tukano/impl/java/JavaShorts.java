@@ -24,11 +24,12 @@ public class JavaShorts implements Shorts {
     public Result<Short> createShort(String userId, String password) {
         try {
             Users users = UsersClientFactory.getClients();
+            var blobURI = BlobsClientFactory.getServerURI();
             var resUser = users.getUser(userId, password);
             if (!resUser.isOK()) return Result.error(resUser.error());
             String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
             UUID id = UUID.randomUUID();
-            Short s = new Short(id.toString(), userId, blob + "/blobs/" + id);
+            Short s = new Short(id.toString(), userId,  blobURI + "/blobs/" + id);
             Hibernate.getInstance().persist(s);
             return Result.ok(s);
         } catch (InterruptedException e) {
@@ -45,8 +46,7 @@ public class JavaShorts implements Shorts {
         Short s = res.value();
         Users users = UsersClientFactory.getClients();
         var resUser = users.getUser(s.getOwnerId(), password);
-        if(resUser.equals(Result.error(Result.ErrorCode.FORBIDDEN)))
-            return Result.error(Result.ErrorCode.FORBIDDEN);
+        if(!resUser.isOK()) return Result.error(Result.ErrorCode.FORBIDDEN);
         Log.info("deleteShort : shortId = " + shortId);
         Hibernate.getInstance().delete(s);
         return Result.ok();

@@ -23,19 +23,10 @@ import utils.Sleep;
 
 public class RestUsersClient extends RestClient implements Users {
 
-	protected static final int MAX_RETRIES = 3;
-	protected static final int RETRY_SLEEP = 1000;
-	final URI serverURI;
-	final Client client;
-	final ClientConfig config;
-
 	final WebTarget target;
 	
-	public RestUsersClient( URI serverURI ) {
-		this.serverURI = serverURI;
-		this.config = new ClientConfig();
-		this.client = ClientBuilder.newClient(config);
-
+	public RestUsersClient(URI serverURI) {
+		super(serverURI);
 		target = client.target( serverURI ).path( RestUsers.PATH );
 	}
 		
@@ -49,11 +40,12 @@ public class RestUsersClient extends RestClient implements Users {
 	}
 
 	@Override
-	public Result<User> getUser(String name, String pwd) {
+	public Result<User> getUser(String userId, String pwd) {
 		return super.reTry(() -> super.toJavaResult(
-		client.target(serverURI).path(RestUsers.PATH)
-		.path(name)
-				.queryParam(RestUsers.PWD, pwd).request()
+				target
+				.path(userId)
+				.queryParam(RestUsers.PWD, pwd)
+				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.get(),User.class));
 

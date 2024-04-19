@@ -14,21 +14,12 @@ import java.net.URI;
 
 import static tukano.impl.rest.clients.RestClient.getErrorCodeFrom;
 
-public class RestBlobsClient implements Blobs {
-
-    protected static final int MAX_RETRIES = 10;
-    protected static final int RETRY_SLEEP = 1000;
-    final URI serverURI;
-    final Client client;
-    final ClientConfig config;
+public class RestBlobsClient extends RestClient implements Blobs {
 
     final WebTarget target;
 
     public RestBlobsClient(URI serverURI) {
-        this.serverURI = serverURI;
-        this.config = new ClientConfig();
-        this.client = ClientBuilder.newClient(config);
-
+        super(serverURI);
         target = client.target(serverURI).path(RestBlobs.PATH);
     }
 

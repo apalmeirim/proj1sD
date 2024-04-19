@@ -67,21 +67,23 @@ public class JavaUsers implements Users {
 
 	@Override
 	public Result<User> updateUser(String userId, String pwd, User user) {
-		if(userId == null || pwd == null || user.getUserId() != null) {
+		if(userId == null || pwd == null) { 
 			Log.info("Name or Password null.");
 			return Result.error( ErrorCode.BAD_REQUEST);
 		}
-
-		// Check if user exists
-		Result<User> res = getUser(userId, pwd);
-		if(!res.isOK()) return Result.error(res.error());
-		User lastUser = res.value();
-		if(user.getPwd() != null) lastUser.setPwd(user.getPwd());
-		if(user.getEmail() != null) lastUser.setEmail(user.getEmail());
-		if(user.getDisplayName() != null) lastUser.setDisplayName(user.getDisplayName());
-		Hibernate.getInstance().update(lastUser);
-		Log.info("UpdateUser : user = " + userId + "; pwd = " + pwd);
-		return Result.ok(lastUser);
+		if(user.getUserId() == null || user.getUserId().equals(userId)) {
+			// Check if user exists
+			Result<User> res = getUser(userId, pwd);
+			if (!res.isOK()) return Result.error(res.error());
+			User lastUser = res.value();
+			if (user.getPwd() != null) lastUser.setPwd(user.getPwd());
+			if (user.getEmail() != null) lastUser.setEmail(user.getEmail());
+			if (user.getDisplayName() != null) lastUser.setDisplayName(user.getDisplayName());
+			Hibernate.getInstance().update(lastUser);
+			Log.info("UpdateUser : user = " + userId + "; pwd = " + pwd);
+			return Result.ok(lastUser);
+		}
+		return Result.error(ErrorCode.BAD_REQUEST);
 	}
 
 	@Override
