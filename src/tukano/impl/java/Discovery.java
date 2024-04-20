@@ -110,11 +110,7 @@ class DiscoveryImpl implements Discovery {
             // TODO: use already stored annoucements,
             // or wait if necessary to have the number of entries requested...
             while (this.knownUrisMap.get(serviceName) == null || this.knownUrisMap.get(serviceName).size() < minEntries) {
-                try {
-                    wait(DISCOVERY_RETRY_TIMEOUT);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Thread.sleep(DISCOVERY_RETRY_TIMEOUT);
             }
             Set<URI> knownUris = knownUrisMap.get(serviceName);
             return knownUris.toArray(new URI[knownUris.size()]);

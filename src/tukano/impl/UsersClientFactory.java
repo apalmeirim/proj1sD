@@ -14,7 +14,7 @@ public class UsersClientFactory {
             var serverURI = Discovery.getInstance().knownUrisOf("users", 1)[0];
             if (serverURI.toString().contains("rest")) return new RestUsersClient(serverURI);
             else return new GrpcUsersClient(serverURI);
-        }catch (InterruptedException e){}
+        } catch (InterruptedException e) {}
         return null;
     }
 

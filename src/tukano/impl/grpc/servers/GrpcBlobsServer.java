@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.logging.Logger;
 
 import io.grpc.ServerBuilder;
+import tukano.api.java.Blobs;
 import tukano.api.java.Users;
 import tukano.impl.java.Discovery;
 
@@ -22,7 +23,7 @@ public class GrpcBlobsServer {
         var serverURI = String.format(SERVER_BASE_URI, InetAddress.getLocalHost().getHostAddress(), PORT, GRPC_CTX);
 
         Discovery.getInstance().announce("blobs", serverURI);
-        Log.info(String.format("%s gRPC Server ready @ %s\n", Users.NAME, serverURI));
+        Log.info(String.format("%s gRPC Server ready @ %s\n", Blobs.NAME, serverURI));
         server.start().awaitTermination();
     }
 }

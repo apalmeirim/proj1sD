@@ -23,14 +23,12 @@ public class BlobsClientFactory {
 
 
     public static URI getServerURI() {
-        try {
+        try{
             URI[] allURIs = Discovery.getInstance().knownUrisOf("blobs", 1);
             URI uri = allURIs[currentIndex];
             currentIndex = (currentIndex + 1) % allURIs.length;
             return uri;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        }catch (InterruptedException e){}
         return null;
     }
 

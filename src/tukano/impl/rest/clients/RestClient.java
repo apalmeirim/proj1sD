@@ -37,9 +37,9 @@ public class RestClient {
     public RestClient(URI serverURI) {
         this.serverURI = serverURI;
         this.config = new ClientConfig();
-        this.client = ClientBuilder.newClient(config);
         config.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);
         config.property(ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+        this.client = ClientBuilder.newClient(config);
     }
 
     protected <T> Result<T> reTry(Supplier<Result<T>> func) {
