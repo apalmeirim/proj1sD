@@ -10,6 +10,7 @@ public class ShortsClientFactory {
 
 
     public static Shorts getClients() {
+
         try {
             var serverURI = Discovery.getInstance().knownUrisOf("shorts", 1)[0];
             if (serverURI.toString().contains("rest")) return new RestShortsClient(serverURI);

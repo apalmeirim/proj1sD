@@ -27,7 +27,7 @@ public class JavaBlobs implements Blobs {
                     return Result.error(Result.ErrorCode.CONFLICT);
                 else Files.write(file.toPath(), bytes);
             }catch (IOException e) {
-                return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+                e.printStackTrace();
             }
         }
         else {
@@ -35,7 +35,7 @@ public class JavaBlobs implements Blobs {
                 file.createNewFile();
                 Files.write(file.toPath(), bytes);
             } catch (IOException e) {
-                return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+                e.printStackTrace();
             }
         }
         return Result.ok();
@@ -51,7 +51,8 @@ public class JavaBlobs implements Blobs {
             if(!file.isFile()) return Result.error(Result.ErrorCode.NOT_FOUND);
             return Result.ok(Files.readAllBytes(file.toPath()));
         } catch (IOException e) {
-            return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+            e.printStackTrace();
+            return Result.ok();
         }
     }
 

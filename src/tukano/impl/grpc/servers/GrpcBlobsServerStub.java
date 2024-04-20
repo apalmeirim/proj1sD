@@ -10,6 +10,7 @@ import tukano.impl.grpc.generated_java.BlobsGrpc;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf;
 import tukano.impl.java.JavaBlobs;
 
+import java.io.UnsupportedEncodingException;
 
 
 public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableService {
@@ -23,7 +24,7 @@ public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableServ
 
     @Override
     public void upload(BlobsProtoBuf.UploadArgs request, StreamObserver<BlobsProtoBuf.UploadResult> responseObserver) {
-        var res = impl.upload(request.getBlobId(), request.getBlobIdBytes().toByteArray());
+        var res = impl.upload(request.getBlobId(), request.getData().toByteArray());
         if( ! res.isOK() )
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {

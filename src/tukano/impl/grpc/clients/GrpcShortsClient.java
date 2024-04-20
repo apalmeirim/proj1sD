@@ -58,6 +58,7 @@ public class GrpcShortsClient implements Shorts {
             return shortIDs;
         });
     }
+
     @Override
     public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
         return null;

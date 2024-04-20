@@ -1,5 +1,6 @@
 package tukano.impl;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import tukano.api.java.Users;
 import tukano.impl.grpc.clients.GrpcUsersClient;
 import tukano.impl.java.Discovery;

@@ -101,19 +101,21 @@ public class JavaUsers implements Users {
 		Iterator<User> itAllUsers = allUsers.iterator();
 		while(itAllUsers.hasNext()) {
 			User u = itAllUsers.next();
-			List<String> allShorts = shorts.getShorts(u.getUserId()).value();
-			Iterator<String> itAllShorts = allShorts.iterator();
-			while(itAllShorts.hasNext()) {
-				String sh = itAllShorts.next();
-				List<String> allLikes = shorts.likes(sh, u.getPwd()).value();
-				if (allLikes.contains(userId)) shorts.like(sh, userId, false, pwd);
+            var resAllShorts = shorts.getShorts(u.getUserId());
+			if(resAllShorts.isOK()) {
+				Iterator<String> itAllShorts = resAllShorts.value().iterator();
+				while (itAllShorts.hasNext()) {
+					String sh = itAllShorts.next();
+					List<String> allLikes = shorts.likes(sh, u.getPwd()).value();
+					if (allLikes.contains(userId)) shorts.like(sh, userId, false, pwd);
+				}
 			}
 		}
 
-		Result<List<String>> resShorts = shorts.getShorts(userId);
+        Result<List<String>> resShorts = shorts.getShorts(userId);
 		if(resShorts.isOK()){
 			Iterator<String> it = resShorts.value().iterator();
-			while(it.hasNext()) {
+			while (it.hasNext()) {
 				String s = it.next();
 				shorts.deleteShort(s, pwd);
 			}

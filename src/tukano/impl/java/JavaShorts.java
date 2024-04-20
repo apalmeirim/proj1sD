@@ -11,6 +11,8 @@ import tukano.impl.BlobsClientFactory;
 import tukano.impl.UsersClientFactory;
 import tukano.persistence.Hibernate;
 
+
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -20,20 +22,15 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<Short> createShort(String userId, String password) {
-        try {
-            Users users = UsersClientFactory.getClients();
-            var blobURI = BlobsClientFactory.getServerURI();
-            var resUser = users.getUser(userId, password);
-            if (!resUser.isOK()) return Result.error(resUser.error());
-            String blob = Discovery.getInstance().knownUrisOf("blobs", 1)[0].toString();
-            UUID id = UUID.randomUUID();
-            Short s = new Short(id.toString(), userId,  blobURI + "/blobs/" + id);
-            Hibernate.getInstance().persist(s);
-            return Result.ok(s);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        Users users = UsersClientFactory.getClients();
+        var blobURI = BlobsClientFactory.getServerURI();
+        var resUser = users.getUser(userId, password);
+        if (!resUser.isOK()) return Result.error(resUser.error());
+        UUID id = UUID.randomUUID();
+        Short s = new Short(id.toString(), userId,  blobURI + "/blobs/" + id, System.currentTimeMillis(), 0);
+        s.setTotalLikes(0);
+        Hibernate.getInstance().persist(s);
+        return Result.ok(s);
     }
 
     @Override
